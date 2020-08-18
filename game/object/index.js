@@ -57,6 +57,7 @@ module.exports = class GameObject {
             healthColor: this.healthColor,
             healthBarColor: this.healthBarColor,
             renderHealthBar: this.renderHealthBar,
+            name: this.name,
 
             // game
             team: this.team,
@@ -92,11 +93,12 @@ module.exports = class GameObject {
         this.healthColor = data.healthColor;
         this.healthBarColor = data.healthBarColor;
         this.renderHealthBar = data.renderHealthBar;
+        this.name = data.name;
 
         // game
         this.team = data.team;
         this.health = data.health;
-        this.maxHealth = data.health;
+        this.maxHealth = data.maxHealth;
         this.bodyDamage = data.bodyDamage;
 
         // movement
@@ -105,6 +107,10 @@ module.exports = class GameObject {
         this.forces = data.forces;
         this.momentum = data.momentum;
         this.friction = data.friction;
+    }
+
+    getName() {
+        return this.name;
     }
 
     /**

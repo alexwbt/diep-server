@@ -17,6 +17,11 @@ module.exports = class CannonBall extends GameObject {
         this.ownerId = data.ownerId;
     }
 
+    getName(game) {
+        const owner = game.objects.find(object => object.objectId === this.ownerId);
+        return owner && owner.name;
+    }
+
     differentTeam(otherObject) {
         return super.differentTeam(otherObject)
             && this.ownerId !== otherObject.objectId

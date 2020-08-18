@@ -23,9 +23,7 @@ module.exports = class Tank extends GameObject {
             bulletDamage: this.bulletDamage,
             bulletPenetration: this.bulletPenetration,
             weapon: this.weapon.getData(),
-            objectType: 'Tank',
-
-            control: this.getControl()
+            objectType: 'Tank'
         };
     }
 

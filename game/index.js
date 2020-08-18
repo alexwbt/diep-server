@@ -5,7 +5,7 @@ const e = require("express");
 
 module.exports = class Game {
 
-    constructor(loopCallback) {
+    constructor(loopCallback, eventCallback) {
         // render
         this.backgroundColor = 'white';
         this.gridColor = 'lightgrey';
@@ -21,6 +21,7 @@ module.exports = class Game {
         this.startTime = Date.now();
         this.interval = setInterval(() => this.loop(), 1000 / 60);
         this.loopCallback = loopCallback;
+        this.eventCallback = eventCallback;
     }
 
     loop() {
@@ -108,8 +109,16 @@ module.exports = class Game {
             object.update(deltaTime, this);
             // collision detection
             this.objects.forEach(otherObject => {
-                if (otherObject !== object && collision(object, otherObject))
+                if (otherObject !== object && collision(object, otherObject)) {
                     object.collide(otherObject);
+                    if (object.health <= 0 && object.name) {
+                        this.eventCallback('killAlert', {
+                            killed: object.name,
+                            killedId: object.objectId,
+                            killedBy: otherObject.getName(this)
+                        })
+                    }
+                }
             });
             if (object.removed)
                 this.spawnParticle(object);
