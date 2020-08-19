@@ -1,5 +1,4 @@
 const GameObject = require(".");
-const { createObjectInfo } = GameObject;
 const Weapon = require("../weapon");
 
 const createTankInfo = info => ({
@@ -9,10 +8,14 @@ const createTankInfo = info => ({
     bulletDamage: 1,
     bulletPenetration: 10,
     weaponType: 'singleCannon',
-    ...createObjectInfo(info)
+    ...info
 });
 
 module.exports = class Tank extends GameObject {
+
+    constructor(info) {
+        super(createTankInfo(info));
+    }
 
     getData() {
         return {
@@ -38,9 +41,11 @@ module.exports = class Tank extends GameObject {
         if (data.weapon) {
             this.weapon = new Weapon(this, data.weapon.type);
             this.weapon.setData(data.weapon);
-        } else {
-            this.weapon = new Weapon(this, data.weaponType);
-        }
+        } else this.setWeapon(data.weaponType);
+    }
+
+    setWeapon(weaponType) {
+        this.weapon = new Weapon(this, weaponType);
     }
 
     move(direction, deltaTime) {
@@ -76,5 +81,3 @@ module.exports = class Tank extends GameObject {
     }
 
 }
-
-module.exports.createTankInfo = createTankInfo;

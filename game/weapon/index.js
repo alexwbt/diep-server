@@ -1,5 +1,37 @@
-const Cannon = require('./Cannon');
-const { createCannonInfo } = Cannon;
+const Cannon = require("./Cannon");
+
+const weaponList = [
+    {
+        name: 'singleCannon',
+        compose: (weapon, owner) => {
+            weapon.components.push(new Cannon(owner));
+        }
+    },
+    {
+        name: 'twinCannon',
+        compose: (weapon, owner) => {
+            weapon.components.push(new Cannon(owner, { y: 0.5, }));
+            weapon.components.push(new Cannon(owner, { y: -0.5, delay: owner.reloadSpeed / 2 }));
+        }
+    },
+    {
+        name: 'triplet',
+        compose: (weapon, owner) => {
+            weapon.components.push(new Cannon(owner, { y: 0.5, delay: owner.reloadSpeed / 2 }));
+            weapon.components.push(new Cannon(owner, { y: -0.5, delay: owner.reloadSpeed / 2 }));
+            weapon.components.push(new Cannon(owner, { width: 1, length: 1.6 }));
+        }
+    },
+    {
+        name: 'minigun',
+        compose: (weapon, owner) => {
+            weapon.components.push(new Cannon(owner, { reloadSpeed: 0.5, width: 0.4, y: 0.25 }));
+            weapon.components.push(new Cannon(owner, { reloadSpeed: 0.5, width: 0.4, y: -0.25 }));
+            weapon.components.push(new Cannon(owner, { reloadSpeed: 0.5, width: 0.4, y: 0.7, length: 1.3, delay: owner.reloadSpeed / 2 }));
+            weapon.components.push(new Cannon(owner, { reloadSpeed: 0.5, width: 0.4, y: -0.7, length: 1.3, delay: owner.reloadSpeed / 2 }));
+        }
+    },
+];
 
 module.exports = class Weapon {
 
@@ -7,26 +39,7 @@ module.exports = class Weapon {
         this.type = type;
         this.firing = false;
         this.components = [];
-        switch (type) {
-            default:
-                this.components.push(new Cannon(createCannonInfo(owner)));
-                break;
-            case 'twinCannon':
-                this.components.push(new Cannon(createCannonInfo(owner, { y: 0.5, })));
-                this.components.push(new Cannon(createCannonInfo(owner, { y: -0.5, delay: owner.reloadSpeed / 2 })));
-                break;
-            case 'triplet':
-                this.components.push(new Cannon(createCannonInfo(owner, { y: 0.5, delay: owner.reloadSpeed / 2 })));
-                this.components.push(new Cannon(createCannonInfo(owner, { y: -0.5, delay: owner.reloadSpeed / 2 })));
-                this.components.push(new Cannon(createCannonInfo(owner, { width: 1, length: 1.6 })));
-                break;
-            case 'minigun':
-                this.components.push(new Cannon(createCannonInfo(owner, { reloadSpeed: 0.5, width: 0.4, y: 0.25 })));
-                this.components.push(new Cannon(createCannonInfo(owner, { reloadSpeed: 0.5, width: 0.4, y: -0.25 })));
-                this.components.push(new Cannon(createCannonInfo(owner, { reloadSpeed: 0.5, width: 0.4, y: 0.7, length: 1.3, delay: owner.reloadSpeed / 2 })));
-                this.components.push(new Cannon(createCannonInfo(owner, { reloadSpeed: 0.5, width: 0.4, y: -0.7, length: 1.3, delay: owner.reloadSpeed / 2 })));
-                break;
-        }
+        (weaponList.find(w => w.name === type) || weaponList[0]).compose(this, owner);
     }
 
     getData() {
@@ -51,3 +64,5 @@ module.exports = class Weapon {
     }
 
 }
+
+module.exports.weaponList = weaponList;

@@ -5,7 +5,6 @@ const io = require('socket.io')(http);
 
 const Game = require('./game');
 const Tank = require('./game/object/Tank');
-const { createTankInfo } = Tank;
 
 let updateCounter = 0;
 const game = new Game((deltaTime) => {
@@ -18,13 +17,14 @@ const game = new Game((deltaTime) => {
     io.emit('gameEvent', { event, data });
 });
 game.spawnObstacles();
+game.spawnWeaponBalls();
 
 io.on('connection', (socket) => {
     let player;
     socket.on('setName', data => {
         if (!data || typeof data !== 'string') return;
         if (player) player.removed = true;
-        player = new Tank(createTankInfo());
+        player = new Tank();
         player.name = data.slice(0, 10);
         socket.emit('playerId', game.spawn(player, true));
         io.emit('gameAlert', data + ' joined');

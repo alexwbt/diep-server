@@ -1,4 +1,3 @@
-const { collision } = require("../collisions");
 const { different } = require("../maths");
 
 const createObjectInfo = info => ({
@@ -20,8 +19,8 @@ const createObjectInfo = info => ({
 
     // game
     team: 'self',
-    health: 100,
-    maxHealth: 100,
+    health: 50,
+    maxHealth: 50,
     bodyDamage: 1,
 
     // movement
@@ -37,7 +36,7 @@ const createObjectInfo = info => ({
 module.exports = class GameObject {
 
     constructor(info) {
-        this.setData(info);
+        this.setData(createObjectInfo(info));
     }
 
     getData() {
@@ -160,5 +159,3 @@ module.exports = class GameObject {
     }
 
 }
-
-module.exports.createObjectInfo = createObjectInfo;

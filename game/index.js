@@ -1,7 +1,6 @@
 const { collision } = require("./collisions");
-const { createObjectInfo } = require("./object");
 const RegularPolygon = require("./object/RegularPolygon");
-const e = require("express");
+const WeaponBall = require('./object/WeaponBall');
 
 module.exports = class Game {
 
@@ -76,14 +75,23 @@ module.exports = class Game {
         for (let i = 0; i < count; i++) {
             const randomRadius = Math.random() * (radius.max - radius.min) + radius.min;
             const randomVertices = Math.round(Math.random() * (vertices.max - vertices.min) + vertices.min);
-            this.spawn(new RegularPolygon(createObjectInfo({
+            this.spawn(new RegularPolygon({
                 radius: randomRadius,
                 color: colors[randomVertices % colors.length],
                 team: 'obstacle',
                 health: randomRadius * 5,
                 maxHealth: randomRadius * 5
-            }), randomVertices), true);
+            }, randomVertices), true);
         }
+    }
+
+    /**
+     * Spawns weapon balls.
+     * @param {number} [count] - Number of weapon ball.
+     */
+    spawnWeaponBalls(count = 20) {
+        for (let i = 0; i < count; i++)
+            this.spawn(new WeaponBall(), true);
     }
 
     update(deltaTime) {
