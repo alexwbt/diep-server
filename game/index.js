@@ -48,7 +48,7 @@ module.exports = class Game {
      * @param {boolean} [randomLocation] - Spawn in random location.
      * @param {number} [range] - Range of random location.
      */
-    spawn(object, randomLocation, range = 1000) {
+    spawn(object, randomLocation, range = 1500) {
         object.objectId = this.nextObjectId++;
         if (randomLocation) {
             object.x = Math.random() * range - range / 2;
