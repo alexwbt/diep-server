@@ -13,7 +13,6 @@ const game = new Game((deltaTime) => {
     if (updateCounter > 0.02) {
         updateCounter = 0;
         const data = game.getData(true);
-        console.log(data);
         data && io.emit('update', data);
     }
 }, (event, data) => {

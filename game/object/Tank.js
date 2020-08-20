@@ -63,7 +63,6 @@ module.exports = class Tank extends GameObject {
         if (this.movingSpeed < this.movementSpeed)
             this.movingSpeed += this.movementSpeed * deltaTime;
         else this.movingSpeed = this.movementSpeed;
-        this.shouldSendSocket = true;
     }
 
     stop() {
@@ -74,7 +73,6 @@ module.exports = class Tank extends GameObject {
             });
             this.movingSpeed = 0;
         }
-        this.shouldSendSocket = true;
     }
 
     update(deltaTime, game) {

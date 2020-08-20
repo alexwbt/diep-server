@@ -36,22 +36,16 @@ module.exports = class Game {
     }
 
     getData(minimal) {
-        let counter = 0;
-        const data = {
-            objects: this.objects.map(e => {
-                const all = !minimal || e.shouldSendSocket;
-                if (all) counter++;
-                e.shouldSendSocket = false;
-                return all ? e.getData() : { id: e.objectId, min: true };
-            }),
-            particles: this.particles.map(e => {
-                const all = !minimal || e.shouldSendSocket;
-                if (all) counter++;
-                e.shouldSendSocket = false;
-                return all ? e.getData() : { id: e.objectId, min: true };
-            })
-        };
-        return counter > 0 && data;
+        if (minimal) {
+            const data = { objects: [], objectIds: [] };
+            for (let i = 0; i < this.objects.length; i++)
+                if (this.objects[i].shouldSendSocket) {
+                    data.objects.push(this.objects[i].getData());
+                    this.objects[i].shouldSendSocket = false;
+                } else data.objectIds.push(this.objects[i].objectId);
+            return data.objects.length > 0 && data;
+        }
+        return { objects: this.objects.map(e => e.getData()) };
     }
 
     /**
