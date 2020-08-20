@@ -35,11 +35,23 @@ module.exports = class Game {
         clearInterval(this.interval);
     }
 
-    getData() {
-        return {
-            objects: this.objects.map(e => e.getData()),
-            particles: this.particles.map(e => e.getData())
+    getData(minimal) {
+        let counter = 0;
+        const data = {
+            objects: this.objects.map(e => {
+                const all = !minimal || e.shouldSendSocket;
+                if (all) counter++;
+                e.shouldSendSocket = false;
+                return all ? e.getData() : { id: e.objectId, min: true };
+            }),
+            particles: this.particles.map(e => {
+                const all = !minimal || e.shouldSendSocket;
+                if (all) counter++;
+                e.shouldSendSocket = false;
+                return all ? e.getData() : { id: e.objectId, min: true };
+            })
         };
+        return counter > 0 && data;
     }
 
     /**
@@ -108,6 +120,9 @@ module.exports = class Game {
         this.objects = this.objects.filter(object => {
             // socket control
             if (object.control) {
+                if (object.control.rotate !== object.rotate ||
+                    object.control.firing !== object.weapon.firing)
+                    object.shouldSendSocket = true;
                 object.rotate = object.control.rotate;
                 object.weapon.fire(object.control.firing);
                 if (object.control.moving)

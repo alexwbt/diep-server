@@ -12,7 +12,9 @@ const game = new Game((deltaTime) => {
     updateCounter += deltaTime;
     if (updateCounter > 0.02) {
         updateCounter = 0;
-        io.emit('update', game.getData());
+        const data = game.getData(true);
+        console.log(data);
+        data && io.emit('update', data);
     }
 }, (event, data) => {
     io.emit('gameEvent', { event, data });
@@ -46,6 +48,7 @@ io.on('connection', (socket) => {
             movingDirection: typeof data.movingDirection === 'number' ? data.movingDirection : 0
         };
     });
+    socket.on('initialUpdate', () => socket.emit('update', game.getData()));
     socket.on('chat', data => { if (data && typeof data === 'string') io.emit('chat', `${player.name}: ${data.slice(0, 50)}`) });
     socket.on('disconnect', () => {
         if (player) {

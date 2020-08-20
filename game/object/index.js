@@ -106,6 +106,9 @@ module.exports = class GameObject {
         this.forces = data.forces;
         this.momentum = data.momentum;
         this.friction = data.friction;
+
+        //
+        this.shouldSendSocket = true;
     }
 
     getName() {
@@ -136,6 +139,8 @@ module.exports = class GameObject {
             if (this.health <= 0) this.removed = true;
             else this.alpha = 0.5;
         }
+
+        this.shouldSendSocket = true;
     }
 
     update(deltaTime) {
@@ -156,6 +161,9 @@ module.exports = class GameObject {
 
         if (this.alpha < 1) this.alpha += deltaTime * 10;
         else this.alpha = 1;
+
+        if (this.momentum.x !== 0 || this.momentum.y !== 0 || this.movingSpeed > 0)
+            this.shouldSendSocket = true;
     }
 
 }
