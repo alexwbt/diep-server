@@ -21,14 +21,22 @@ game.spawnObstacles();
 game.spawnWeaponBalls();
 
 io.on('connection', (socket) => {
-    let player;
-    socket.on('setName', data => {
-        if (!data || typeof data !== 'string') return;
+    let player, name;
+
+    const spawnPlayer = () => {
         if (player) player.removed = true;
         player = new Tank();
-        player.name = data.slice(0, 10);
+        player.name = name;
         socket.emit('playerId', game.spawn(player, true));
-        io.emit('gameAlert', data + ' joined');
+    };
+
+    socket.on('spawnPlayer', spawnPlayer);
+    socket.on('setName', data => {
+        if (!data || typeof data !== 'string') return;
+        name = data.slice(0, 10);
+        if (!player) spawnPlayer();
+        else player.name = name;
+        io.emit('gameAlert', name + ' joined');
     });
     socket.on('update', data => {
         if (player && data) player.control = {
