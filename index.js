@@ -53,7 +53,6 @@ io.on('connection', (socket) => {
             if (player.name) io.emit('gameAlert', player.name + ' left');
         }
     });
-    socket.emit('connected');
 });
 
 const { PORT } = process.env;
