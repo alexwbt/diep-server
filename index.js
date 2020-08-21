@@ -10,7 +10,7 @@ const Tank = require('./game/object/Tank');
 let updateCounter = 0;
 const game = new Game((deltaTime) => {
     updateCounter += deltaTime;
-    if (updateCounter > 0.02) {
+    if (updateCounter > +process.env.UPDATE) {
         updateCounter = 0;
         const data = game.getData(true);
         data && io.emit('update', data);
