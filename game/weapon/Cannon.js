@@ -1,5 +1,7 @@
+const { collision } = require("../collisions");
 const { pythagorean, radians } = require("../maths");
 const CannonBall = require("../object/CannonBall");
+const { AABB } = require("../constants");
 
 const createCannonInfo = info => ({
     x: 0,
@@ -45,24 +47,24 @@ module.exports = class Cannon {
         this.reloadCounter = 0;
     }
 
-    getData() {
-        return this.reloadCounter;
-    }
+    // getData() {
+    //     return this.reloadCounter;
+    // }
 
-    setData(data) {
-        this.reloadCounter = data;
-    }
+    // setData(data) {
+    //     this.reloadCounter = data;
+    // }
 
-    getVertices() {
+    getVertices(game, mod = 0) {
         const rotate = radians(this.owner.rotate) + this.rotate;
         const reloadProgress = 1 - this.reloadCounter / (this.reloadSpeed * this.owner.reloadSpeed);
         const length = this.length * (1 - this.recoil + Math.min(1, reloadProgress) * this.recoil);
 
         const vertices = [
-            { x: this.x, y: this.y - this.width / 2 },
-            { x: this.x + length, y: this.y - this.width / 2 },
-            { x: this.x + length, y: this.y + this.width / 2 },
-            { x: this.x, y: this.y + this.width / 2 }
+            { x: this.x + mod, y: this.y - this.width / 2 + mod },
+            { x: this.x + length - mod, y: this.y - this.width / 2 + mod },
+            { x: this.x + length - mod, y: this.y + this.width / 2 - mod },
+            { x: this.x + mod, y: this.y + this.width / 2 - mod }
         ];
 
         for (let i = 0; i < vertices.length; i++) {
@@ -70,9 +72,29 @@ module.exports = class Cannon {
             const mag = pythagorean(vertices[i].x, vertices[i].y);
             const x = this.owner.x + Math.cos(dir) * this.owner.radius * mag;
             const y = this.owner.y + Math.sin(dir) * this.owner.radius * mag;
-            vertices[i] = { x, y };
+            vertices[i] = game ? game.onScreen(x, y) : { x, y };
         }
         return vertices;
+    }
+
+    onScreen(game) {
+        const vertices = this.getVertices(game);
+        const a = { x: vertices[0].x, y: vertices[0].y };
+        const b = { x: vertices[0].x, y: vertices[0].y };
+        vertices.forEach(vertex => {
+            a.x = Math.min(a.x, vertex.x);
+            a.y = Math.min(a.y, vertex.y);
+            b.x = Math.max(b.x, vertex.x);
+            b.y = Math.max(b.y, vertex.y);
+        });
+        return {
+            vertices: this.getVertices(game),
+            onScreen: collision({ shape: AABB, a, b }, {
+                shape: AABB,
+                a: { x: 0, y: 0 },
+                b: { x: game.canvas.width, y: game.canvas.height }
+            })
+        };
     }
 
     update(deltaTime, game) {
@@ -111,6 +133,27 @@ module.exports = class Cannon {
         }
     }
 
-}
+    render(ctx, game) {
+        const { vertices, onScreen } = this.onScreen(game);
+        if (!onScreen) return;
 
-module.exports.createCannonInfo = createCannonInfo;
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.moveTo(vertices[0].x, vertices[0].y);
+        for (let i = 1; i < vertices.length; i++)
+            ctx.lineTo(vertices[i].x, vertices[i].y);
+        ctx.closePath();
+        ctx.fill();
+
+        const borderVertices = this.getVertices(game, this.owner.borderWidth / 2);
+        ctx.strokeStyle = this.owner.borderColor;
+        ctx.lineWidth = this.owner.radius * game.scale * this.owner.borderWidth;
+        ctx.beginPath();
+        ctx.moveTo(borderVertices[0].x, borderVertices[0].y);
+        for (let i = 1; i < borderVertices.length; i++)
+            ctx.lineTo(borderVertices[i].x, borderVertices[i].y);
+        ctx.closePath();
+        ctx.stroke();
+    }
+
+}

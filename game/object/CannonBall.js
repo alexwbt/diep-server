@@ -1,25 +1,32 @@
 const GameObject = require(".");
+const { CANNON_BALL, defaultValue } = require("../constants");
 
 module.exports = class CannonBall extends GameObject {
 
-    getData() {
-        return {
-            ...super.getData(),
-            lifeTime: this.lifeTime,
-            ownerId: this.ownerId,
-            objectType: 'CannonBall'
-        };
+    constructor(initInfo) {
+        super({
+            ...initInfo,
+            renderHealthBar: false,
+            objectType: CANNON_BALL
+        });
+        if (initInfo) {
+            this.lifeTime = defaultValue(initInfo.lifeTime, 0);
+            this.ownerId = defaultValue(initInfo.ownerId, 0);
+        }
     }
 
-    setData(data) {
-        super.setData(data);
-        this.lifeTime = data.lifeTime;
-        this.ownerId = data.ownerId;
+    getInfo() {
+        return super.getInfo().concat([
+            this.lifeTime,
+            this.ownerId
+        ]);
     }
 
-    getName(game) {
-        const owner = game.objects.find(object => object.objectId === this.ownerId);
-        return owner && owner.name;
+    setInfo(info) {
+        let i = super.setInfo(info);
+        this.lifeTime = info[i++];
+        this.ownerId = info[i++];
+        return i;
     }
 
     differentTeam(otherObject) {

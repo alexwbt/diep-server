@@ -1,6 +1,7 @@
 const GameObject = require('.');
 const Tank = require('./Tank');
 const { weaponList } = require('../weapon');
+const { WEAPON_BALL } = require('../constants');
 
 module.exports = class WeaponBall extends GameObject {
 
@@ -10,21 +11,26 @@ module.exports = class WeaponBall extends GameObject {
             health: 1,
             maxHealth: 1,
             bodyDamage: 0,
-            weaponBallType: weaponList[Math.floor(Math.random() * weaponList.length)].name
+            objectType: WEAPON_BALL
         });
+        this.setWeapon(weaponList[Math.floor(Math.random() * weaponList.length)].name);
     }
 
-    getData() {
-        return {
-            ...super.getData(),
-            weaponBallType: this.weaponBallType,
-            objectType: 'WeaponBall'
-        };
+    getInfo() {
+        return super.getInfo().concat([
+            this.weaponBallType
+        ]);
     }
 
-    setData(data) {
-        super.setData(data);
-        this.weaponBallType = data.weaponBallType;
+    setInfo(info) {
+        let i = super.setInfo(info);
+        this.setWeapon(i++);
+        return i;
+    }
+
+    setWeapon(weaponType) {
+        this.weaponBallType = weaponType;
+        this.weaponPreview = new Tank({ color: 'white', radius: this.radius * 0.4, weaponType });
     }
 
     collide(otherObject) {
@@ -35,6 +41,13 @@ module.exports = class WeaponBall extends GameObject {
             this.removed = false;
             this.health = this.maxHealth;
         }
+    }
+
+    render(ctx, game) {
+        super.render(ctx, game);
+        this.weaponPreview.x = this.x;
+        this.weaponPreview.y = this.y;
+        this.weaponPreview.render(ctx, game);
     }
 
 

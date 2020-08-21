@@ -1,50 +1,61 @@
 const GameObject = require(".");
 const Weapon = require("../weapon");
-
-const createTankInfo = info => ({
-    movementSpeed: 50,
-    reloadSpeed: 1,
-    bulletSpeed: 100,
-    bulletDamage: 1,
-    bulletPenetration: 10,
-    weaponType: 'singleCannon',
-    ...info
-});
+const { radians } = require("../maths");
+const { TANK, defaultValue } = require("../constants");
 
 module.exports = class Tank extends GameObject {
 
-    constructor(info) {
-        super(createTankInfo(info));
+    constructor(initInfo) {
+        super({
+            ...initInfo,
+            objectType: TANK
+        });
+        if (initInfo) {
+            this.movementSpeed = defaultValue(initInfo.movementSpeed, 50);
+            this.reloadSpeed = defaultValue(initInfo.reloadSpeed, 1);
+            this.bulletSpeed = defaultValue(initInfo.bulletSpeed, 100);
+            this.bulletDamage = defaultValue(initInfo.bulletDamage, 1);
+            this.bulletPenetration = defaultValue(initInfo.bulletPenetration, 10);
+            this.setWeapon(defaultValue(initInfo.weaponType, 'singleCannon'));
+        }
+    }
+
+    getInfo() {
+        return super.getInfo().concat([
+            this.movementSpeed,
+            this.reloadSpeed,
+            this.bulletSpeed,
+            this.bulletDamage,
+            this.bulletPenetration,
+            this.weaponType
+        ]);
+    }
+
+    setInfo(info) {
+        let i = super.setInfo(info);
+        this.movementSpeed = info[i++];
+        this.reloadSpeed = info[i++];
+        this.bulletSpeed = info[i++];
+        this.bulletDamage = info[i++];
+        this.bulletPenetration = info[i++];
+        this.setWeapon(info[i++]);
+        return i;
     }
 
     getData() {
-        return {
-            ...super.getData(),
-            movementSpeed: this.movementSpeed,
-            reloadSpeed: this.reloadSpeed,
-            bulletSpeed: this.bulletSpeed,
-            bulletDamage: this.bulletDamage,
-            bulletPenetration: this.bulletPenetration,
-            weapon: this.weapon.getData(),
-            objectType: 'Tank'
-        };
+        return super.getData().concat([
+            this.weapon.firing
+        ]);
     }
 
     setData(data) {
-        super.setData(data);
-        this.movementSpeed = data.movementSpeed;
-        this.reloadSpeed = data.reloadSpeed;
-        this.bulletSpeed = data.bulletSpeed;
-        this.bulletDamage = data.bulletDamage;
-        this.bulletPenetration = data.bulletPenetration;
-
-        if (data.weapon) {
-            this.weapon = new Weapon(this, data.weapon.type);
-            this.weapon.setData(data.weapon);
-        } else this.setWeapon(data.weaponType);
+        let i = super.setData(data);
+        this.weapon.firing = data[i++];
+        return i;
     }
 
     setWeapon(weaponType) {
+        this.weaponType = weaponType;
         this.weapon = new Weapon(this, weaponType);
     }
 
@@ -78,6 +89,35 @@ module.exports = class Tank extends GameObject {
     update(deltaTime, game) {
         super.update(deltaTime);
         this.weapon.update(deltaTime, game);
+    }
+
+    render(ctx, game) {
+        ctx.globalAlpha = this.alpha;
+        this.weapon.render(ctx, game);
+        ctx.globalAlpha = 0;
+        super.render(ctx, game);
+    }
+
+    mapRender(ctx, map) {
+        const { x, y, radius, onMap } = this.onMap(map);
+        if (!onMap) return;
+
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, 2 * Math.PI);
+        ctx.fill();
+
+
+
+        let dir = radians(this.rotate);
+        ctx.beginPath();
+        ctx.moveTo(x + Math.cos(dir) * radius * 2, y + Math.sin(dir) * radius * 2);
+        dir += radians(30);
+        ctx.lineTo(x + Math.cos(dir) * radius * 1.5, y + Math.sin(dir) * radius * 1.5);
+        dir -= radians(60);
+        ctx.lineTo(x + Math.cos(dir) * radius * 1.5, y + Math.sin(dir) * radius * 1.5);
+        ctx.closePath();
+        ctx.fill();
     }
 
 }

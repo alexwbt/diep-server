@@ -1,4 +1,5 @@
 require('dotenv').config();
+const { PORT, UPDATE, MIN_DATA } = process.env;
 const express = require('express');
 const app = express();
 const http = require('http').createServer(app);
@@ -10,9 +11,9 @@ const Tank = require('./game/object/Tank');
 let updateCounter = 0;
 const game = new Game((deltaTime) => {
     updateCounter += deltaTime;
-    if (updateCounter > +process.env.UPDATE) {
+    if (updateCounter > +UPDATE) {
         updateCounter = 0;
-        const data = game.getData(true);
+        const data = game.getData(!!MIN_DATA);
         data && io.emit('update', data);
     }
 }, (event, data) => {
@@ -26,8 +27,7 @@ io.on('connection', (socket) => {
 
     const spawnPlayer = () => {
         if (player) player.removed = true;
-        player = new Tank();
-        player.name = name;
+        player = new Tank({ name });
         socket.emit('playerId', game.spawn(player, true));
     };
 
@@ -57,7 +57,6 @@ io.on('connection', (socket) => {
     });
 });
 
-const { PORT } = process.env;
 http.listen(PORT, () => {
     console.log(`Server started on port ${PORT}.`);
 });

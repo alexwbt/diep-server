@@ -36,16 +36,8 @@ module.exports = class Game {
     }
 
     getData(minimal) {
-        if (minimal) {
-            const data = { objects: [], objectIds: [] };
-            for (let i = 0; i < this.objects.length; i++)
-                if (this.objects[i].shouldSendSocket) {
-                    data.objects.push(this.objects[i].getData());
-                    this.objects[i].shouldSendSocket = false;
-                } else data.objectIds.push(this.objects[i].objectId);
-            return data.objects.length > 0 && data;
-        }
-        return { objects: this.objects.map(e => e.getData()) };
+        const mapFunction = minimal ? e => e.getData() : e => e.getInfo();
+        return { objects: this.objects.map(mapFunction), min: minimal };
     }
 
     /**
@@ -77,14 +69,14 @@ module.exports = class Game {
      * @param {{min: number, max: number}} [radius] - Range of random radius.
      */
     spawnObstacles(count = 50, vertices = { min: 3, max: 5 }, radius = { min: 5, max: 20 }) {
-        const colors = ['orange', '#FF9', '#06f'];
+        const colors = ['#dd8800ff', '#ffff99ff', '#0066ffff'];
         for (let i = 0; i < count; i++) {
             const randomRadius = Math.random() * (radius.max - radius.min) + radius.min;
             const randomVertices = Math.round(Math.random() * (vertices.max - vertices.min) + vertices.min);
             this.spawn(new RegularPolygon({
                 radius: randomRadius,
                 color: colors[randomVertices % colors.length],
-                team: 'obstacle',
+                team: -1,
                 health: randomRadius * 5,
                 maxHealth: randomRadius * 5
             }, randomVertices), true);
@@ -118,7 +110,7 @@ module.exports = class Game {
                     object.control.firing !== object.weapon.firing)
                     object.shouldSendSocket = true;
                 object.rotate = object.control.rotate;
-                object.weapon.fire(object.control.firing);
+                object.weapon.firing = object.control.firing;
                 if (object.control.moving)
                     object.move(object.control.movingDirection, deltaTime);
                 else object.stop();
