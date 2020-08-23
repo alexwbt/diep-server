@@ -11,10 +11,10 @@ module.exports = class Tank extends GameObject {
             objectType: TANK
         });
         if (initInfo) {
-            this.movementSpeed = defaultValue(initInfo.movementSpeed, 50);
-            this.reloadSpeed = defaultValue(initInfo.reloadSpeed, 1);
-            this.bulletSpeed = defaultValue(initInfo.bulletSpeed, 100);
-            this.bulletDamage = defaultValue(initInfo.bulletDamage, 1);
+            this.movementSpeed = defaultValue(initInfo.movementSpeed, 60);
+            this.reloadSpeed = defaultValue(initInfo.reloadSpeed, 0.60);
+            this.bulletSpeed = defaultValue(initInfo.bulletSpeed, 125);
+            this.bulletDamage = defaultValue(initInfo.bulletDamage, 3);
             this.bulletPenetration = defaultValue(initInfo.bulletPenetration, 10);
             this.setWeapon(defaultValue(initInfo.weaponType, 'singleCannon'));
         }
@@ -27,7 +27,8 @@ module.exports = class Tank extends GameObject {
             this.bulletSpeed,
             this.bulletDamage,
             this.bulletPenetration,
-            this.weaponType
+            this.weaponType,
+            this.weapon.getData()
         ]);
     }
 
@@ -38,7 +39,7 @@ module.exports = class Tank extends GameObject {
         this.bulletSpeed = info[i++];
         this.bulletDamage = info[i++];
         this.bulletPenetration = info[i++];
-        this.setWeapon(info[i++]);
+        this.setWeapon(info[i++], info[i++]);
         return i;
     }
 
@@ -54,9 +55,10 @@ module.exports = class Tank extends GameObject {
         return i;
     }
 
-    setWeapon(weaponType) {
+    setWeapon(weaponType, data) {
         this.weaponType = weaponType;
         this.weapon = new Weapon(this, weaponType);
+        if (data) this.weapon.setData(data);
     }
 
     move(direction, deltaTime) {

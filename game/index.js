@@ -74,12 +74,13 @@ module.exports = class Game {
             const randomRadius = Math.random() * (radius.max - radius.min) + radius.min;
             const randomVertices = Math.round(Math.random() * (vertices.max - vertices.min) + vertices.min);
             this.spawn(new RegularPolygon({
+                vertices: randomVertices,
                 radius: randomRadius,
                 color: colors[randomVertices % colors.length],
                 team: -1,
                 health: randomRadius * 5,
                 maxHealth: randomRadius * 5
-            }, randomVertices), true);
+            }), true);
         }
     }
 
@@ -124,7 +125,7 @@ module.exports = class Game {
                         this.eventCallback('killAlert', {
                             killed: object.name,
                             killedId: object.objectId,
-                            killedBy: otherObject.getName(this)
+                            killedBy: otherObject.name || otherObject.ownerName
                         })
                     }
                 }

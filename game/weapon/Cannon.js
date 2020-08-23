@@ -47,13 +47,13 @@ module.exports = class Cannon {
         this.reloadCounter = 0;
     }
 
-    // getData() {
-    //     return this.reloadCounter;
-    // }
+    getData() {
+        return this.reloadCounter;
+    }
 
-    // setData(data) {
-    //     this.reloadCounter = data;
-    // }
+    setData(data) {
+        this.reloadCounter = data;
+    }
 
     getVertices(game, mod = 0) {
         const rotate = radians(this.owner.rotate) + this.rotate;
@@ -112,7 +112,7 @@ module.exports = class Cannon {
                 x: this.owner.x + Math.cos(dir) * mag,
                 y: this.owner.y + Math.sin(dir) * mag,
                 radius,
-                color: 'red',
+                color: '#ff0000ff',
                 borderWidth: 0.5,
                 renderHealthBar: false,
                 renderOnMap: false,
@@ -122,7 +122,8 @@ module.exports = class Cannon {
                 movingDirection: radians(this.owner.rotate) + this.rotate,
                 movingSpeed,
                 lifeTime: this.range,
-                ownerId: this.owner.objectId
+                ownerId: this.owner.objectId,
+                ownerName: this.owner.name
             }));
             this.owner.addForce({
                 x: -Math.cos(cannonDir) * movingSpeed * radius * 0.1,

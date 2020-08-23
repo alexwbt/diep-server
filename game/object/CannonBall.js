@@ -12,6 +12,7 @@ module.exports = class CannonBall extends GameObject {
         if (initInfo) {
             this.lifeTime = defaultValue(initInfo.lifeTime, 0);
             this.ownerId = defaultValue(initInfo.ownerId, 0);
+            this.ownerName = defaultValue(initInfo.ownerName, '');
         }
     }
 

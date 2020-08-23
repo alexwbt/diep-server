@@ -75,7 +75,9 @@ module.exports = class GameObject {
             this.movingDirection,
             this.movingSpeed,
             this.momentumX,
-            this.momentumY
+            this.momentumY,
+            this.forces,
+            this.friction
         ];
     }
 
@@ -111,6 +113,8 @@ module.exports = class GameObject {
         this.movingSpeed = info[i++];
         this.momentumX = info[i++];
         this.momentumY = info[i++];
+        this.forces = info[i++];
+        this.friction = info[i++];
         return i;
     }
 
@@ -125,7 +129,10 @@ module.exports = class GameObject {
             this.rotate,
             this.health,
             this.movingDirection,
-            this.movingSpeed
+            this.movingSpeed,
+            this.momentumX,
+            this.momentumY,
+            this.forces
         ];
     }
 
@@ -137,6 +144,9 @@ module.exports = class GameObject {
         this.health = data[i++];
         this.movingDirection = data[i++];
         this.movingSpeed = data[i++];
+        this.momentumX = data[i++];
+        this.momentumY = data[i++];
+        this.forces = data[i++];
         return i;
     }
 
@@ -157,7 +167,7 @@ module.exports = class GameObject {
      * @param {{x: number, y: number}} force 
      */
     addForce(force) {
-        this.forces.push(force);
+        this.forces.push([force.x, force.y]);
     }
 
     differentTeam(otherObject) {
@@ -180,8 +190,8 @@ module.exports = class GameObject {
 
     update(deltaTime) {
         this.forces.forEach(force => {
-            this.momentumX += force.x;
-            this.momentumY += force.y;
+            this.momentumX += force[0];
+            this.momentumY += force[1];
         });
         this.forces = [];
         this.x += this.momentumX * deltaTime;

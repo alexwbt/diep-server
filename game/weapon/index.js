@@ -42,18 +42,13 @@ module.exports = class Weapon {
         (weaponList.find(w => w.name === type) || weaponList[0]).compose(this, owner);
     }
 
-    // getData() {
-    //     return {
-    //         type: this.type,
-    //         firing: this.firing,
-    //         components: this.components.map(c => c.getData())
-    //     };
-    // }
+    getData() {
+        return this.components.map(c => c.getData());
+    }
 
-    // setData(data) {
-    //     this.firing = data.firing;
-    //     this.components.forEach((c, i) => c.setData(data.components[i]));
-    // }
+    setData(data) {
+        this.components.forEach((c, i) => c.setData(data[i]));
+    }
 
     update(deltaTime, game) {
         this.components.forEach(c => c.update(deltaTime, game));

@@ -1,13 +1,13 @@
-const GameObject = require('.');
-const Tank = require('./Tank');
-const { weaponList } = require('../weapon');
-const { WEAPON_BALL } = require('../constants');
+const  GameObject = require('.');
+const  Tank = require('./Tank');
+const  { weaponList } = require('../weapon');
+const  { WEAPON_BALL } = require('../constants');
 
 module.exports = class WeaponBall extends GameObject {
 
     constructor() {
         super({
-            color: 'white',
+            color: '#ffffffff',
             health: 1,
             maxHealth: 1,
             bodyDamage: 0,
@@ -24,13 +24,15 @@ module.exports = class WeaponBall extends GameObject {
 
     setInfo(info) {
         let i = super.setInfo(info);
-        this.setWeapon(i++);
+        this.setWeapon(info[i++]);
         return i;
     }
 
     setWeapon(weaponType) {
-        this.weaponBallType = weaponType;
-        this.weaponPreview = new Tank({ color: 'white', radius: this.radius * 0.4, weaponType });
+        if (this.weaponType !== weaponType) {
+            this.weaponBallType = weaponType;
+            this.weaponPreview = new Tank({ color: '#ffffffff', radius: this.radius * 0.4, weaponType });
+        }
     }
 
     collide(otherObject) {
@@ -49,6 +51,5 @@ module.exports = class WeaponBall extends GameObject {
         this.weaponPreview.y = this.y;
         this.weaponPreview.render(ctx, game);
     }
-
 
 }
