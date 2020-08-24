@@ -20,7 +20,7 @@ const game = new Game((deltaTime) => {
     io.emit('gameEvent', { event, data });
 });
 game.spawnObstacles();
-game.spawnWeaponBalls();
+game.spawnBalls();
 
 io.on('connection', (socket) => {
     let player, name;

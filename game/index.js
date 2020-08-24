@@ -85,12 +85,14 @@ module.exports = class Game {
     }
 
     /**
-     * Spawns weapon balls.
-     * @param {number} [count] - Number of weapon ball.
+     * Spawns balls.
+     * @param {number} [count] - Number of balls.
      */
-    spawnWeaponBalls(count = 20) {
+    spawnBalls(count = 20) {
         for (let i = 0; i < count; i++)
             this.spawn(new WeaponBall(), true);
+        for (let i = 0; i < count; i++)
+            this.spawn(new HealBall(), true);
     }
 
     update(deltaTime) {

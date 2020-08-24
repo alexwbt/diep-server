@@ -5,6 +5,7 @@ const REGULAR_POLYGON = 1;
 const TANK = 2;
 const CANNON_BALL = 3;
 const WEAPON_BALL = 4;
+const HEAL_BALL = 5;
 
 // shapes
 const CIRCLE = 0;
@@ -25,6 +26,7 @@ module.exports = {
     TANK,
     CANNON_BALL,
     WEAPON_BALL,
+    HEAL_BALL,
     CIRCLE,
     POLYGON,
     AABB,
