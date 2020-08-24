@@ -46,6 +46,7 @@ io.on('connection', (socket) => {
             moving: typeof data.moving === 'boolean' && data.moving,
             movingDirection: typeof data.movingDirection === 'number' ? data.movingDirection : 0
         };
+        io.emit('playerRotate', [player.objectId, player.control.rotate]);
     });
     socket.on('initialUpdate', () => socket.emit('update', game.getData()));
     socket.on('chat', data => { if (data && typeof data === 'string') io.emit('chat', `${player.name}: ${data.slice(0, 50)}`) });
