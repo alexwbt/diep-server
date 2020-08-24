@@ -1,12 +1,13 @@
 const GameObject = require('.');
 const { radians } = require('../maths');
-const { REGULAR_POLYGON, defaultValue } = require('../constants');
+const { REGULAR_POLYGON, defaultValue, POLYGON } = require('../constants');
 
 module.exports = class RegularPolygon extends GameObject {
 
     constructor(initInfo) {
         super({
             ...initInfo,
+            shape: POLYGON,
             objectType: REGULAR_POLYGON
         });
         if (initInfo) {

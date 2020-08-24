@@ -10,7 +10,7 @@ const HEAL_BALL = 5;
 // shapes
 const CIRCLE = 0;
 const POLYGON = 1;
-const AABB = 3;
+const AABB = 2;
 
 // color
 const color = value => '#' + value.toString(16).padStart(8, 0);
