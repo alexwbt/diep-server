@@ -1,7 +1,7 @@
 const GameObject = require('.');
 const { HEAL_BALL } = require('../constants');
 
-export default class HealBall extends GameObject {
+module.exports = class HealBall extends GameObject {
 
     constructor() {
         super({

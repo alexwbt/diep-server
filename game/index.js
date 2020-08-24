@@ -1,6 +1,7 @@
 const { collision } = require("./collisions");
 const RegularPolygon = require("./object/RegularPolygon");
 const WeaponBall = require('./object/WeaponBall');
+const HealBall = require('./object/HealBall');
 
 module.exports = class Game {
 
