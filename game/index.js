@@ -2,6 +2,7 @@ const { collision } = require("./collisions");
 const RegularPolygon = require("./object/RegularPolygon");
 const WeaponBall = require('./object/WeaponBall');
 const HealBall = require('./object/HealBall');
+const ShieldBall = require('./object/ShieldBall');
 
 module.exports = class Game {
 
@@ -94,6 +95,8 @@ module.exports = class Game {
             this.spawn(new WeaponBall(), true);
         for (let i = 0; i < count; i++)
             this.spawn(new HealBall(), true);
+        for (let i = 0; i < count; i++)
+            this.spawn(new ShieldBall(), true);
     }
 
     update(deltaTime) {
@@ -122,7 +125,7 @@ module.exports = class Game {
             object.update(deltaTime, this);
             // collision detection
             this.objects.forEach(otherObject => {
-                if (otherObject !== object && collision(object, otherObject)) {
+                if (otherObject !== object && collision(object.getShape(), otherObject.getShape())) {
                     object.collide(otherObject);
                     if (object.health <= 0 && object.name) {
                         this.eventCallback('killAlert', {

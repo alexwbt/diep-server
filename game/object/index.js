@@ -24,12 +24,14 @@ module.exports = class GameObject {
             this.healthBarColor = defaultValue(initInfo.healthBarColor, '#00000099');
             this.renderHealthBar = defaultValue(initInfo.renderHealthBar, true);
             this.name = defaultValue(initInfo.name, '');
+            this.shieldRadiusMod = defaultValue(initInfo.shieldRadiusMod, 1.5);
 
             // game
             this.team = defaultValue(initInfo.team, 0);
             this.health = defaultValue(initInfo.health, 100);
             this.maxHealth = defaultValue(initInfo.maxHealth, 100);
             this.bodyDamage = defaultValue(initInfo.bodyDamage, 1);
+            this.shield = defaultValue(initInfo.shield, 0);
 
             // movement
             this.movingDirection = defaultValue(initInfo.movingDirection, 0);
@@ -64,12 +66,14 @@ module.exports = class GameObject {
             colorValue(this.healthBarColor),
             this.renderHealthBar,
             this.name,
+            this.shieldRadiusMod,
 
             // game
             this.team,
             this.health,
             this.maxHealth,
             this.bodyDamage,
+            this.shield,
 
             // movement
             this.movingDirection,
@@ -107,6 +111,7 @@ module.exports = class GameObject {
         this.health = info[i++];
         this.maxHealth = info[i++];
         this.bodyDamage = info[i++];
+        this.shield = info[i++];
 
         // movement
         this.movingDirection = info[i++];
@@ -128,6 +133,7 @@ module.exports = class GameObject {
             this.y,
             this.rotate,
             this.health,
+            this.shield,
             this.movingDirection,
             this.movingSpeed,
             this.momentumX,
@@ -142,6 +148,7 @@ module.exports = class GameObject {
         this.y = data[i++];
         this.rotate = data[i++];
         this.health = data[i++];
+        this.shield = data[i++];
         this.movingDirection = data[i++];
         this.movingSpeed = data[i++];
         this.momentumX = data[i++];
@@ -182,14 +189,27 @@ module.exports = class GameObject {
         });
 
         if (this.differentTeam(otherObject) && otherObject.differentTeam(this)) {
-            this.health -= otherObject.bodyDamage;
+            if (this.shield > 0) this.shield -= otherObject.bodyDamage
+            else this.health -= otherObject.bodyDamage;
             if (this.health <= 0) this.removed = true;
-            else this.alpha = 0.5;
+            this.alpha = 0.5;
         }
     }
 
+    getShape() {
+        if (this.shield > 0) {
+            return {
+                shape: CIRCLE,
+                x: this.x,
+                y: this.y,
+                radius: this.radius * this.shieldRadiusMod
+            };
+        }
+        return this;
+    }
+
     update(deltaTime) {
-        this.forces.forEach(force => {
+        this.forces && this.forces.forEach(force => {
             this.momentumX += force[0];
             this.momentumY += force[1];
         });
@@ -210,8 +230,16 @@ module.exports = class GameObject {
 
     render(ctx, game) {
         const { x, y, radius, onScreen } = this.onScreen(game);
-        if (!onScreen) return;
+        if (!onScreen) return { x, y, radius, onScreen };
         ctx.globalAlpha = this.alpha;
+
+        if (this.shield > 0) {
+            ctx.strokeStyle = 'rgba(150, 150, 200, 0.5)';
+            ctx.lineWidth = this.shield * 0.1 * game.scale;
+            ctx.beginPath();
+            ctx.arc(x, y, radius * this.shieldRadiusMod, 0, 2 * Math.PI);
+            ctx.stroke();
+        }
 
         ctx.fillStyle = this.color;
         ctx.beginPath();
@@ -233,6 +261,7 @@ module.exports = class GameObject {
             ctx.fillText(this.name, x, y - radius * 1.5);
         }
         ctx.globalAlpha = 1;
+        return { x, y, radius, onScreen };
     }
 
     healthBarRender(ctx, x, y, radius) {
