@@ -16,16 +16,19 @@ const collision = (object1, object2) => {
     }
 };
 
-module.exports = {
-    collision
-};
-
 /**
  * Returns true if point is within circle.
  * @param {{x: number, y: number}} point 
  * @param {{x: number, y: number, radius: number}} circle 
  */
 const pointInCircle = (point, circle) => closerThan(point, circle, circle.radius);
+
+/**
+ * Returns true if circle1 is within circle2.
+ * @param {{x: number, y: number, radius: number}} point 
+ * @param {{x: number, y: number, radius: number}} circle 
+ */
+const circleInCircle = (circle1, circle2) => closerThan(circle1, circle2, circle2.radius - circle1.radius);
 
 /**
  * Returns true if point is within polygon.
@@ -110,4 +113,9 @@ const circleVsPolygon = (circle, polygon) => {
         if (circleVsLine(circle, polygon[i], polygon[(i + 1) % polygon.length]))
             return true;
     return pointInPolygon(circle, polygon);
+};
+
+module.exports = {
+    collision,
+    circleInCircle
 };

@@ -1,4 +1,4 @@
-const { collision } = require("./collisions");
+const { collision, circleInCircle } = require("./collisions");
 const RegularPolygon = require("./object/RegularPolygon");
 const WeaponBall = require('./object/WeaponBall');
 const HealBall = require('./object/HealBall');
@@ -18,6 +18,8 @@ module.exports = class Game {
         this.spawnList = [];
         this.objects = [];
         this.particles = [];
+        this.borderRadius = 500;
+        this.borderSpeed = 0.05;
 
         this.startTime = Date.now();
         this.interval = setInterval(() => this.loop(), 1000 / 60);
@@ -39,7 +41,7 @@ module.exports = class Game {
 
     getData(minimal) {
         const mapFunction = minimal ? e => e.getData() : e => e.getInfo();
-        return { objects: this.objects.map(mapFunction), min: minimal };
+        return { br: this.borderRadius, objects: this.objects.map(mapFunction), min: minimal };
     }
 
     /**
@@ -123,23 +125,43 @@ module.exports = class Game {
                 else object.stop();
             }
             object.update(deltaTime, this);
+            const objShape = object.getShape();
+
             // collision detection
             this.objects.forEach(otherObject => {
-                if (otherObject !== object && collision(object.getShape(), otherObject.getShape())) {
+                if (otherObject !== object && collision(objShape, otherObject.getShape())) {
                     object.collide(otherObject);
                     if (object.health <= 0 && object.name) {
                         this.eventCallback('killAlert', {
                             killed: object.name,
                             killedId: object.objectId,
                             killedBy: otherObject.name || otherObject.ownerName
-                        })
+                        });
                     }
                 }
             });
+            // border
+            if (!circleInCircle(objShape, { x: 0, y: 0, radius: this.borderRadius })) {
+                object.addForce({ x: -object.x, y: -object.y });
+                object.health -= 10;
+                if (object.health <= 0) {
+                    object.removed = true;
+                    if (object.name) {
+                        this.eventCallback('killAlert', {
+                            killed: object.name,
+                            killedId: object.objectId
+                        });
+                    }
+                }
+            }
             if (object.removed)
                 this.spawnParticle(object);
             return !object.removed;
         });
+
+        if (this.borderRadius > 100) {
+            this.borderRadius -= this.borderSpeed;
+        }
     }
 
 }
