@@ -3,40 +3,58 @@ const RegularPolygon = require("./object/RegularPolygon");
 const WeaponBall = require('./object/WeaponBall');
 const HealBall = require('./object/HealBall');
 const ShieldBall = require('./object/ShieldBall');
+const { TANK } = require('./constants');
+const GameObject = require("./object");
 
 module.exports = class Game {
 
-    constructor(loopCallback, eventCallback) {
+    constructor(io) {
         // render
         this.backgroundColor = 'white';
         this.gridColor = 'lightgrey';
         this.gridWidth = 1;
         this.gridSize = 10;
 
-        // game
+        // gamemode
+        this.gameStarted = false;
+
+        // gameloop
+        this.startTime = Date.now();
+        this.interval = setInterval(() => this.gameloop(), 1000 / 60);
+
+        // socket
+        this.updateCounter = 0;
+        this.io = io;
+
+        this.init();
+    }
+
+    init() {
         this.nextObjectId = 1;
         this.spawnList = [];
         this.objects = [];
         this.particles = [];
+        this.minBorderRadius = 100;
         this.borderRadius = 2000;
         this.borderSpeed = 0.1;
 
-        this.startTime = Date.now();
-        this.interval = setInterval(() => this.loop(), 1000 / 60);
-        this.loopCallback = loopCallback;
-        this.eventCallback = eventCallback;
+        this.spawnObstacles();
+        this.spawnBalls();
     }
 
-    loop() {
+    gameloop() {
         const now = Date.now();
         const deltaTime = (now - this.startTime) / 1000;
         this.startTime = now;
         this.update(deltaTime, this);
-        this.loopCallback(deltaTime);
-    }
 
-    stop() {
-        clearInterval(this.interval);
+        // socket
+        this.updateCounter += deltaTime;
+        if (this.updateCounter > +process.env.UPDATE) {
+            this.updateCounter = 0;
+            const data = this.getData(!!process.env.MIN_DATA);
+            data && this.io.emit('update', data);
+        }
     }
 
     getData(minimal) {
@@ -49,6 +67,7 @@ module.exports = class Game {
      * @param {*} object 
      * @param {boolean} [randomLocation] - Spawn in random location.
      * @param {number} [range] - Range of random location.
+     * @param {number} [minRange] - Minimum range of random location.
      */
     spawn(object, randomLocation, range, minRange = 0) {
         if (!range) range = this.borderRadius - object.radius - 10;
@@ -75,15 +94,27 @@ module.exports = class Game {
      * @param {{min: number, max: number}} [vertices] - Range of random vertices.
      * @param {{min: number, max: number}} [radius] - Range of random radius.
      */
-    spawnObstacles(count = 50, vertices = { min: 3, max: 5 }, radius = { min: 5, max: 100 }) {
+    spawnObstacles(count = 80, vertices = { min: 3, max: 5 }, radius = { min: 5, max: 100 }) {
         const colors = ['#dd8800ff', '#ffff99ff', '#0066ffff'];
-        for (let i = 0; i < count; i++) {
+        for (let i = 0; i < count / 2; i++) {
             const randomRadius = Math.round(Math.random() * (radius.max - radius.min) + radius.min);
             const randomVertices = Math.round(Math.random() * (vertices.max - vertices.min) + vertices.min);
             this.spawn(new RegularPolygon({
                 vertices: randomVertices,
+                rotate: Math.random() * 360,
                 radius: randomRadius,
                 color: colors[randomVertices % colors.length],
+                team: -1,
+                health: randomRadius * 10,
+                maxHealth: randomRadius * 10,
+                friction: randomRadius
+            }), true);
+        }
+        for (let i = 0; i < count / 2; i++) {
+            const randomRadius = Math.round(Math.random() * (radius.max - radius.min) + radius.min);
+            this.spawn(new GameObject({
+                radius: randomRadius,
+                color: '#aabbccff',
                 team: -1,
                 health: randomRadius * 10,
                 maxHealth: randomRadius * 10,
@@ -129,14 +160,31 @@ module.exports = class Game {
                 else object.stop();
             }
             object.update(deltaTime, this);
-            const objShape = object.getShape();
-
+            // border
+            if (!circleInCircle(object, { x: 0, y: 0, radius: this.borderRadius })) {
+                switch (object.objectType) {
+                    case TANK:
+                        object.health -= this.minBorderRadius / this.borderRadius;
+                        if (object.health <= 0) {
+                            object.removed = true;
+                            this.io.emit('killAlert', {
+                                killed: object.name,
+                                killedId: object.objectId
+                            });
+                        }
+                        break;
+                    default:
+                        const dir = Math.atan2(-object.y, -object.x);
+                        object.addForce({ x: Math.cos(dir) * 500, y: Math.sin(dir) * 500 });
+                        object.removed = true;
+                }
+            }
             // collision detection
             this.objects.forEach(otherObject => {
-                if (otherObject !== object && collision(objShape, otherObject.getShape())) {
+                if (otherObject !== object && collision(object.getShape(), otherObject.getShape())) {
                     object.collide(otherObject);
-                    if (object.health <= 0 && object.name) {
-                        this.eventCallback('killAlert', {
+                    if (object.removed && object.name) {
+                        this.io.emit('killAlert', {
                             killed: object.name,
                             killedId: object.objectId,
                             killedBy: otherObject.name || otherObject.ownerName
@@ -144,25 +192,12 @@ module.exports = class Game {
                     }
                 }
             });
-            // border
-            if (!circleInCircle(objShape, { x: 0, y: 0, radius: this.borderRadius })) {
-                const dir = Math.atan2(-object.y, -object.x);
-                object.addForce({ x: Math.cos(dir) * 500, y: Math.sin(dir) * 500 });
-                object.health -= 10;
-                if (object.health <= 0 || !object.name) {
-                    object.removed = true;
-                    if (object.name) this.eventCallback('killAlert', {
-                        killed: object.name,
-                        killedId: object.objectId
-                    });
-                }
-            }
             if (object.removed)
                 this.spawnParticle(object);
             return !object.removed;
         });
 
-        if (this.borderRadius > 100) {
+        if (this.gameStarted && this.borderRadius > this.minBorderRadius) {
             this.borderRadius -= this.borderSpeed;
         }
     }
