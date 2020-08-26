@@ -28,7 +28,7 @@ io.on('connection', (socket) => {
     const spawnPlayer = () => {
         if (player) player.removed = true;
         player = new Tank({ name });
-        socket.emit('playerId', game.spawn(player, true));
+        socket.emit('playerId', game.spawn(player, true, false, game.borderRadius / 2));
     };
 
     socket.on('spawnPlayer', spawnPlayer);

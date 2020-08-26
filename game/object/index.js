@@ -38,9 +38,9 @@ module.exports = class GameObject {
             this.movingSpeed = defaultValue(initInfo.movingSpeed, 0);
             this.momentumX = defaultValue(initInfo.momentumX, 0);
             this.momentumY = defaultValue(initInfo.momentumY, 0);
+            this.friction = defaultValue(initInfo.friction, 5);
         }
         this.forces = [];
-        this.friction = 5;
     }
 
     /**

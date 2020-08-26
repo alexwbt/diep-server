@@ -18,8 +18,8 @@ module.exports = class Game {
         this.spawnList = [];
         this.objects = [];
         this.particles = [];
-        this.borderRadius = 500;
-        this.borderSpeed = 0.05;
+        this.borderRadius = 2000;
+        this.borderSpeed = 0.1;
 
         this.startTime = Date.now();
         this.interval = setInterval(() => this.loop(), 1000 / 60);
@@ -50,11 +50,14 @@ module.exports = class Game {
      * @param {boolean} [randomLocation] - Spawn in random location.
      * @param {number} [range] - Range of random location.
      */
-    spawn(object, randomLocation, range = 1500) {
+    spawn(object, randomLocation, range, minRange = 0) {
+        if (!range) range = this.borderRadius - object.radius - 10;
         object.objectId = this.nextObjectId++;
         if (randomLocation) {
-            object.x = Math.random() * range - range / 2;
-            object.y = Math.random() * range - range / 2;
+            const randomDirection = Math.random() * Math.PI * 2;
+            const randomRange = Math.random() * (range - minRange) + minRange;
+            object.x = Math.cos(randomDirection) * randomRange;
+            object.y = Math.sin(randomDirection) * randomRange;
         }
         this.spawnList.push(object);
         return object.objectId;
@@ -72,18 +75,19 @@ module.exports = class Game {
      * @param {{min: number, max: number}} [vertices] - Range of random vertices.
      * @param {{min: number, max: number}} [radius] - Range of random radius.
      */
-    spawnObstacles(count = 50, vertices = { min: 3, max: 5 }, radius = { min: 5, max: 20 }) {
+    spawnObstacles(count = 50, vertices = { min: 3, max: 5 }, radius = { min: 5, max: 100 }) {
         const colors = ['#dd8800ff', '#ffff99ff', '#0066ffff'];
         for (let i = 0; i < count; i++) {
-            const randomRadius = Math.random() * (radius.max - radius.min) + radius.min;
+            const randomRadius = Math.round(Math.random() * (radius.max - radius.min) + radius.min);
             const randomVertices = Math.round(Math.random() * (vertices.max - vertices.min) + vertices.min);
             this.spawn(new RegularPolygon({
                 vertices: randomVertices,
                 radius: randomRadius,
                 color: colors[randomVertices % colors.length],
                 team: -1,
-                health: randomRadius * 5,
-                maxHealth: randomRadius * 5
+                health: randomRadius * 10,
+                maxHealth: randomRadius * 10,
+                friction: randomRadius
             }), true);
         }
     }
@@ -92,13 +96,13 @@ module.exports = class Game {
      * Spawns balls.
      * @param {number} [count] - Number of balls.
      */
-    spawnBalls(count = 20) {
+    spawnBalls(count = 25) {
         for (let i = 0; i < count; i++)
-            this.spawn(new WeaponBall(), true);
+            this.spawn(new WeaponBall(), true, this.borderRadius / 2);
         for (let i = 0; i < count; i++)
-            this.spawn(new HealBall(), true);
+            this.spawn(new HealBall(), true, this.borderRadius / 2);
         for (let i = 0; i < count; i++)
-            this.spawn(new ShieldBall(), true);
+            this.spawn(new ShieldBall(), true), this.borderRadius / 2;
     }
 
     update(deltaTime) {
@@ -142,16 +146,15 @@ module.exports = class Game {
             });
             // border
             if (!circleInCircle(objShape, { x: 0, y: 0, radius: this.borderRadius })) {
-                object.addForce({ x: -object.x, y: -object.y });
+                const dir = Math.atan2(-object.y, -object.x);
+                object.addForce({ x: Math.cos(dir) * 500, y: Math.sin(dir) * 500 });
                 object.health -= 10;
-                if (object.health <= 0) {
+                if (object.health <= 0 || !object.name) {
                     object.removed = true;
-                    if (object.name) {
-                        this.eventCallback('killAlert', {
-                            killed: object.name,
-                            killedId: object.objectId
-                        });
-                    }
+                    if (object.name) this.eventCallback('killAlert', {
+                        killed: object.name,
+                        killedId: object.objectId
+                    });
                 }
             }
             if (object.removed)
