@@ -18,7 +18,7 @@ module.exports = class HealBall extends GameObject {
         super.collide(otherObject);
         if (this.removed && typeof otherObject.setWeapon === 'function' &&
             otherObject.health < otherObject.maxHealth) {
-            otherObject.health = otherObject.maxHealth;
+                otherObject.health = Math.min(otherObject.maxHealth, otherObject.health + otherObject.maxHealth * 0.3);
         } else {
             this.removed = false;
             this.health = this.maxHealth;

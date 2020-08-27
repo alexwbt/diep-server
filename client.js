@@ -2,6 +2,9 @@ const Tank = require('./game/object/Tank');
 
 const clients = [];
 
+let countdown = 0;
+let countdownInterval = false;
+
 class Client {
 
     constructor(socket, game) {
@@ -9,11 +12,11 @@ class Client {
         this.game = game;
         this.clientIndex = clients.length;
 
-        this.socket.on('spawnPlayer', this.spawnPlayerObject.bind(this));
+        this.socket.on('spawnPlayer', () => this.spawnPlayerObject());
 
         this.socket.on('setName', data => {
-            if (game.gameStarted || !data || typeof data !== 'string') return;
-            this.name = data.slice(0, 10);
+            if (game.gameStarted || !data || typeof data !== 'string' || data === 'spectator') return;
+            this.name = data.slice(0, 20);
             if (!this.player) this.spawnPlayerObject();
             else this.player.name = this.name;
             this.socket.broadcast.emit('gameAlert', this.name + ' joined');
@@ -34,7 +37,7 @@ class Client {
             this.socket.on('initialUpdate', () => this.socket.emit('update', this.game.getData()));
 
         this.socket.on('chat', data => {
-            if (data && typeof data === 'string') {
+            if (data && typeof data === 'string' && this.player && this.player.name) {
                 this.socket.broadcast.emit('chat', `${this.player.name}: ${data.slice(0, 50)}`);
                 this.socket.emit('chat', `${this.player.name}: ${data.slice(0, 50)}`);
             }
@@ -44,48 +47,49 @@ class Client {
             if (this.player) {
                 this.player.removed = true;
                 if (this.player.name) socket.broadcast.emit('gameAlert', this.player.name + ' left');
+                if (this.game.deathSocketUpdate().length < 2 && countdownInterval) {
+                    clearInterval(countdownInterval);
+                    countdownInterval = false;
+                    countdown = -10;
+                    this.socket.broadcast.emit('stopCountdown');
+                }
             }
             clients.splice(this.clientIndex, 1);
         });
     }
 
-    spawnPlayerObject() {
-        if (this.game.gameStarted || !this.name) return;
+    spawnPlayerObject(startGame) {
+        if (this.game.gameStarted) {
+            this.socket.emit('gameAlert', 'Game is in progress. You can join the game when it ends.');
+            return;
+        }
+        if (!this.name) return;
         if (this.player) this.player.removed = true;
         this.player = new Tank({ name: this.name });
         this.socket.emit('playerId', this.game.spawn(this.player, true, false, this.game.borderRadius / 2));
+
+        const alivePlayers = this.game.deathSocketUpdate();
+        if (alivePlayers.length > 1 && !countdownInterval) {
+            countdown = 60;
+            countdownInterval = setInterval(() => {
+                countdown--;
+                if (countdown < 0) {
+                    this.game.init();
+                    clients.forEach(c => c.player && !c.player.removed && c.spawnPlayerObject(true));
+                    this.game.gameStarted = countdown > -10;
+                    clearInterval(countdownInterval);
+                    countdownInterval = false;
+                    countdown = 0;
+                }
+            }, 1000);
+            this.socket.broadcast.emit('startCountdown', countdown);
+        }
+        if (countdown > 0) this.socket.emit('startCountdown', countdown);
+        else if (!startGame) this.socket.emit('gameAlert', 'Game has not started yet... Waiting for players to join.');
     }
 
 }
 
-let countdown;
-let countdownInterval;
-module.exports = game => socket => {
-    // if (clients.length < 2 && !countdownInterval && !game.gameStarted) {
-    //     countdown = 30;
-    //     countdownInterval = setInterval(() => {
-    //         countdown--;
-    //         if (countdown < 0) {
-    //             game.init();
-    //             clients.forEach(c => c.spawnPlayerObject());
-    //             game.gameStarted = true;
-    //             clearInterval(countdownInterval);
-    //             countdownInterval = false;
-    //         }
-    //     }, 1000);
-    // }
-    // if (countdown > 0) socket.emit('startCountdown', countdown);
-    // else socket.emit('gameAlert', 'Game has not started yet');
-    game.gameStarted = true;
-    clients.push(new Client(socket, game));
-};
+module.exports = game => socket => clients.push(new Client(socket, game));
 
-module.exports.playerKillUpdate = io => {
-    const alivePlayers = clients.filter(c => c.player && !c.player.removed);
-    io.emit('alivePlayers', alivePlayers.map(c => c.name));
-    if (alivePlayers.length === 0) {
-        io.emit('gameEnded', {
-
-        });
-    }
-};
+module.exports.clients = clients;

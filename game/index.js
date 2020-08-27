@@ -5,6 +5,7 @@ const HealBall = require('./object/HealBall');
 const ShieldBall = require('./object/ShieldBall');
 const { TANK } = require('./constants');
 const GameObject = require("./object");
+const { clients } = require("../client");
 
 module.exports = class Game {
 
@@ -14,9 +15,6 @@ module.exports = class Game {
         this.gridColor = 'lightgrey';
         this.gridWidth = 1;
         this.gridSize = 10;
-
-        // gamemode
-        this.gameStarted = false;
 
         // gameloop
         this.startTime = Date.now();
@@ -36,7 +34,8 @@ module.exports = class Game {
         this.particles = [];
         this.minBorderRadius = 100;
         this.borderRadius = 2000;
-        this.borderSpeed = 0.1;
+        this.borderSpeed = 0.15;
+        this.gameStarted = false;
 
         this.spawnObstacles();
         this.spawnBalls();
@@ -94,7 +93,7 @@ module.exports = class Game {
      * @param {{min: number, max: number}} [vertices] - Range of random vertices.
      * @param {{min: number, max: number}} [radius] - Range of random radius.
      */
-    spawnObstacles(count = 80, vertices = { min: 3, max: 5 }, radius = { min: 5, max: 100 }) {
+    spawnObstacles(count = 50, vertices = { min: 3, max: 5 }, radius = { min: 5, max: 100 }) {
         const colors = ['#dd8800ff', '#ffff99ff', '#0066ffff'];
         for (let i = 0; i < count / 2; i++) {
             const randomRadius = Math.round(Math.random() * (radius.max - radius.min) + radius.min);
@@ -127,13 +126,13 @@ module.exports = class Game {
      * Spawns balls.
      * @param {number} [count] - Number of balls.
      */
-    spawnBalls(count = 25) {
+    spawnBalls(count = 30) {
         for (let i = 0; i < count; i++)
             this.spawn(new WeaponBall(), true, this.borderRadius / 2);
         for (let i = 0; i < count; i++)
             this.spawn(new HealBall(), true, this.borderRadius / 2);
         for (let i = 0; i < count; i++)
-            this.spawn(new ShieldBall(), true), this.borderRadius / 2;
+            this.spawn(new ShieldBall(), true, this.borderRadius / 2);
     }
 
     update(deltaTime) {
@@ -167,10 +166,7 @@ module.exports = class Game {
                         object.health -= this.minBorderRadius / this.borderRadius;
                         if (object.health <= 0) {
                             object.removed = true;
-                            this.io.emit('killAlert', {
-                                killed: object.name,
-                                killedId: object.objectId
-                            });
+                            this.deathSocketUpdate(object);
                         }
                         break;
                     default:
@@ -183,13 +179,8 @@ module.exports = class Game {
             this.objects.forEach(otherObject => {
                 if (otherObject !== object && collision(object.getShape(), otherObject.getShape())) {
                     object.collide(otherObject);
-                    if (object.removed && object.name) {
-                        this.io.emit('killAlert', {
-                            killed: object.name,
-                            killedId: object.objectId,
-                            killedBy: otherObject.name || otherObject.ownerName
-                        });
-                    }
+                    if (object.removed && object.name)
+                        this.deathSocketUpdate(object, otherObject);
                 }
             });
             if (object.removed)
@@ -200,6 +191,27 @@ module.exports = class Game {
         if (this.gameStarted && this.borderRadius > this.minBorderRadius) {
             this.borderRadius -= this.borderSpeed;
         }
+    }
+
+    deathSocketUpdate(object, otherObject) {
+        if (object) {
+            if (!object.killCount) object.killCount = 0;
+            object.killCount++;
+            this.io.emit('killAlert', {
+                killed: object.name,
+                killedId: object.objectId,
+                killedBy: otherObject && (otherObject.name || otherObject.ownerName)
+            });
+        }
+
+        const alivePlayers = clients.filter(c => c.player && !c.player.removed);
+        this.io.emit('alivePlayers', alivePlayers.map(c => ({ name: c.name, kills: c.killCount })));
+        if (alivePlayers.length === 1 && this.gameStarted) {
+            this.io.emit('gameEnded', { winner: alivePlayers[0].name });
+            this.gameStarted = false;
+            setTimeout(() => this.init(), 100);
+        }
+        return alivePlayers;
     }
 
 }
