@@ -7,6 +7,7 @@ const CANNON_BALL = 3;
 const WEAPON_BALL = 4;
 const HEAL_BALL = 5;
 const SHIELD_BALL = 6;
+const BUSH = 7;
 
 // shapes
 const CIRCLE = 0;
@@ -29,6 +30,7 @@ module.exports = {
     WEAPON_BALL,
     HEAL_BALL,
     SHIELD_BALL,
+    BUSH,
 
     CIRCLE,
     POLYGON,

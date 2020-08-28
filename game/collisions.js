@@ -117,5 +117,6 @@ const circleVsPolygon = (circle, polygon) => {
 
 module.exports = {
     collision,
-    circleInCircle
+    circleInCircle,
+    pointInCircle
 };
