@@ -75,7 +75,7 @@ class Client {
                 countdown--;
                 if (countdown < 0) {
                     this.game.init();
-                    clients.forEach(c => c.player && !c.player.removed && c.spawnPlayerObject(true));
+                    alivePlayers.forEach(c => c.spawnPlayerObject(true));
                     this.game.gameStarted = countdown > -10;
                     clearInterval(countdownInterval);
                     countdownInterval = false;

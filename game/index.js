@@ -36,6 +36,7 @@ module.exports = class Game {
         this.borderRadius = 2000;
         this.borderSpeed = 0.15;
         this.gameStarted = false;
+        this.playerList = [];
 
         this.spawnObstacles();
         this.spawnBalls();
@@ -179,6 +180,8 @@ module.exports = class Game {
             this.objects.forEach(otherObject => {
                 if (otherObject !== object && collision(object.getShape(), otherObject.getShape())) {
                     object.collide(otherObject);
+                    if (!this.gameStarted)
+                        object.health = object.maxHealth;
                     if (object.removed && object.name)
                         this.deathSocketUpdate(object, otherObject);
                 }
