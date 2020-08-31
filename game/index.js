@@ -7,6 +7,7 @@ const { TANK } = require('./constants');
 const GameObject = require("./object");
 const { clients } = require("../client");
 const Bush = require("./object/Bush");
+const AutoDefenseTankBall = require("./object/AutoDefenseTankBall");
 
 module.exports = class Game {
 
@@ -149,6 +150,8 @@ module.exports = class Game {
             this.spawn(new HealBall(), true, this.borderRadius / 2);
         for (let i = 0; i < count; i++)
             this.spawn(new ShieldBall(), true, this.borderRadius / 2);
+        for (let i = 0; i < count; i++)
+            this.spawn(new AutoDefenseTankBall(), true, this.borderRadius / 2);
     }
 
     spawnBushes(count = 20) {
@@ -200,7 +203,7 @@ module.exports = class Game {
             this.objects.forEach(otherObject => {
                 if (otherObject === object) return;
                 if (collision(object.getShape(), otherObject.getShape())) {
-                    object.collide(otherObject);
+                    object.collide(otherObject, this);
                     if (!this.gameStarted)
                         object.health = object.maxHealth;
                     if (object.removed && object.name)

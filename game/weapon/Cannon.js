@@ -122,7 +122,7 @@ module.exports = class Cannon {
                 movingDirection: radians(this.owner.rotate) + this.rotate,
                 movingSpeed,
                 lifeTime: this.range,
-                ownerId: this.owner.objectId,
+                ownerId: this.owner.ownerId || this.owner.objectId,
                 ownerName: this.owner.name
             }));
             this.owner.addForce({

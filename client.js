@@ -70,7 +70,7 @@ class Client {
 
         const alivePlayers = this.game.deathSocketUpdate();
         if (alivePlayers.length > 1 && !countdownInterval) {
-            countdown = 60;
+            countdown = 3;
             countdownInterval = setInterval(() => {
                 countdown--;
                 if (countdown < 0) {
