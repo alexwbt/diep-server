@@ -198,13 +198,16 @@ module.exports = class Game {
             }
             // collision detection
             this.objects.forEach(otherObject => {
-                if (otherObject !== object && collision(object.getShape(), otherObject.getShape())) {
+                if (otherObject === object) return;
+                if (collision(object.getShape(), otherObject.getShape())) {
                     object.collide(otherObject);
                     if (!this.gameStarted)
                         object.health = object.maxHealth;
                     if (object.removed && object.name)
                         this.deathSocketUpdate(object, otherObject);
                 }
+                if (typeof object.otherObjectUpdate === 'function')
+                    object.otherObjectUpdate(otherObject);
             });
             if (object.removed)
                 this.spawnParticle(object);
