@@ -72,8 +72,8 @@ class Client {
         this.player = new Tank({ name: this.name });
         this.socket.emit('playerId', this.game.spawn(this.player, true, false, this.game.borderRadius / 2));
 
-        if (this.game.deathSocketUpdate().length > 1 && !countdownObject.countdownInterval) {
-            countdownObject.countdown = 30;
+        if (this.game.deathSocketUpdate().length >= +(process.env.START_GAME_PLAYER_COUNT || 2) && !countdownObject.countdownInterval) {
+            countdownObject.countdown = +(process.env.COUNTDOWN || 60);
             countdownObject.countdownInterval = setInterval(() => {
                 countdownObject.countdown--;
                 if (countdownObject.countdown < 0) {
