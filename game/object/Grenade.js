@@ -83,8 +83,4 @@ module.exports = class Grenade extends GameObject {
         }
     }
 
-    differentTeam() {
-        return true;
-    }
-
 }
