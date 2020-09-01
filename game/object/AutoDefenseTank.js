@@ -41,15 +41,10 @@ module.exports = class AutoDefenseTank extends Tank {
         if (!this.weapon.firing) this.rotate = this.owner.rotate;
     }
 
-    differentTeam(otherObject) {
-        return super.differentTeam(otherObject)
-            && this.ownerId !== otherObject.objectId
-            && this.ownerId !== otherObject.ownerId;
-    }
-
     otherObjectUpdate(otherObject) {
         if (otherObject === this.owner ||
             !otherObject.weapon ||
+            !otherObject.name ||
             !this.differentTeam(otherObject) ||
             !otherObject.differentTeam(this))
             return;

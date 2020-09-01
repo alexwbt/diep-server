@@ -8,6 +8,7 @@ const GameObject = require("./object");
 const { clients } = require("../client");
 const Bush = require("./object/Bush");
 const AutoDefenseTankBall = require("./object/AutoDefenseTankBall");
+const Grenade = require("./object/Grenade");
 
 module.exports = class Game {
 
@@ -152,6 +153,8 @@ module.exports = class Game {
             this.spawn(new ShieldBall(), true, this.borderRadius / 2);
         for (let i = 0; i < count; i++)
             this.spawn(new AutoDefenseTankBall(), true, this.borderRadius / 2);
+        for (let i = 0; i < count; i++)
+            this.spawn(new Grenade(), true);
     }
 
     spawnBushes(count = 20) {
@@ -200,14 +203,17 @@ module.exports = class Game {
                 }
             }
             // collision detection
+            let updated = false;
             this.objects.forEach(otherObject => {
                 if (otherObject === object) return;
                 if (collision(object.getShape(), otherObject.getShape())) {
                     object.collide(otherObject, this);
                     if (!this.gameStarted)
                         object.health = object.maxHealth;
-                    if (object.removed && object.name)
+                    if (object.removed && object.name && !updated) {
                         this.deathSocketUpdate(object, otherObject);
+                        updated = true;
+                    }
                 }
                 if (typeof object.otherObjectUpdate === 'function')
                     object.otherObjectUpdate(otherObject);
@@ -235,6 +241,7 @@ module.exports = class Game {
 
         const alivePlayers = clients.filter(c => c.player && !c.player.removed);
         this.io.emit('alivePlayers', alivePlayers.map(c => ({ name: c.name, kills: c.killCount })));
+        console.log(alivePlayers.length);
         if (alivePlayers.length === 1 && this.gameStarted) {
             this.io.emit('gameEnded', { winner: alivePlayers[0].name });
             this.gameStarted = false;

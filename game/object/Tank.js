@@ -2,6 +2,7 @@ const GameObject = require(".");
 const Weapon = require("../weapon");
 const { radians } = require("../maths");
 const { TANK, defaultValue } = require("../constants");
+const Grenade = require("./Grenade");
 
 module.exports = class Tank extends GameObject {
 
@@ -18,6 +19,7 @@ module.exports = class Tank extends GameObject {
             this.bulletPenetration = defaultValue(initInfo.bulletPenetration, 10);
             this.setWeapon(defaultValue(initInfo.weaponType, 'singleCannon'));
         }
+        this.grenade = 0;
     }
 
     getInfo() {
@@ -28,7 +30,8 @@ module.exports = class Tank extends GameObject {
             this.bulletDamage,
             this.bulletPenetration,
             this.weaponType,
-            this.weapon.getData()
+            this.weapon.getData(),
+            this.grenade
         ]);
     }
 
@@ -40,6 +43,7 @@ module.exports = class Tank extends GameObject {
         this.bulletDamage = info[i++];
         this.bulletPenetration = info[i++];
         this.setWeapon(info[i++], info[i++]);
+        this.grenade = info[i++];
         return i;
     }
 
@@ -85,6 +89,24 @@ module.exports = class Tank extends GameObject {
                 y: Math.sin(this.movingDirection) * this.movingSpeed
             });
             this.movingSpeed = 0;
+        }
+    }
+
+    throwGrenade(game) {
+        if (this.grenade >= 1) {
+            this.grenade--;
+            const dir = radians(this.rotate);
+            const x = Math.cos(dir);
+            const y = Math.sin(dir);
+            const grenade = new Grenade({
+                x: this.x + x * (this.radius + 5),
+                y: this.y + y * (this.radius + 5)
+            }, this);
+            grenade.addForce({
+                x: x * 500,
+                y: y * 500
+            });
+            game.spawn(grenade);
         }
     }
 

@@ -67,6 +67,7 @@ module.exports = class GameObject {
             this.renderHealthBar,
             this.name,
             this.shieldRadiusMod,
+            this.fadeOverTime,
 
             // game
             this.team,
@@ -74,6 +75,7 @@ module.exports = class GameObject {
             this.maxHealth,
             this.bodyDamage,
             this.shield,
+            this.ownerId,
 
             // movement
             this.movingDirection,
@@ -105,6 +107,8 @@ module.exports = class GameObject {
         this.healthBarColor = color(info[i++]);
         this.renderHealthBar = info[i++];
         this.name = info[i++];
+        this.shieldRadiusMod = info[i++];
+        this.fadeOverTime = info[i++];
 
         // game
         this.team = info[i++];
@@ -112,6 +116,7 @@ module.exports = class GameObject {
         this.maxHealth = info[i++];
         this.bodyDamage = info[i++];
         this.shield = info[i++];
+        this.ownerId = info[i++];
 
         // movement
         this.movingDirection = info[i++];
@@ -178,7 +183,11 @@ module.exports = class GameObject {
     }
 
     differentTeam(otherObject) {
-        return this.team !== otherObject.team || this.team === 0;
+        let isDifferentTeam = true;
+        if (this.ownerId !== undefined)
+            isDifferentTeam = this.ownerId !== otherObject.objectId
+                && this.ownerId !== otherObject.ownerId;
+        return isDifferentTeam && (this.team !== otherObject.team || this.team === 0);
     }
 
     collide(otherObject) {

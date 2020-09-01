@@ -10,6 +10,7 @@ const SHIELD_BALL = 6;
 const BUSH = 7;
 const AD_TANK = 8;
 const AD_TANK_BALL = 9;
+const GRENADE = 10;
 
 // shapes
 const CIRCLE = 0;
@@ -35,6 +36,7 @@ module.exports = {
     BUSH,
     AD_TANK,
     AD_TANK_BALL,
+    GRENADE,
 
     CIRCLE,
     POLYGON,

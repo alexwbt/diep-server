@@ -30,12 +30,6 @@ module.exports = class CannonBall extends GameObject {
         return i;
     }
 
-    differentTeam(otherObject) {
-        return super.differentTeam(otherObject)
-            && this.ownerId !== otherObject.objectId
-            && this.ownerId !== otherObject.ownerId;
-    }
-
     update(deltaTime) {
         super.update(deltaTime);
         this.lifeTime -= deltaTime;
