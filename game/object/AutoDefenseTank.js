@@ -27,13 +27,14 @@ module.exports = class AutoDefenseTank extends Tank {
 
     update(deltaTime, game) {
         super.update(deltaTime, game);
-        this.weapon.firing = !!this.target;
+        this.weapon.firing = false;
 
         const dif = different(this, this.owner);
         const dis = dif.x * dif.x + dif.y * dif.y;
-        const range = this.radius * 4 + this.owner.radius * 4;
-        if (dis > range * range) this.move(Math.atan2(dif.y, dif.x), deltaTime);
+        const range = 10000;
+        if (dis > range) this.move(Math.atan2(dif.y, dif.x), deltaTime);
         else if (this.target) {
+            this.weapon.firing = true;
             this.rotate = degree(Math.atan2(this.target.y - this.y, this.target.x - this.x));
             this.move(radians(this.rotate), deltaTime);
             this.target = false;
