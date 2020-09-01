@@ -18,7 +18,7 @@ module.exports = class AutoDefenseTankBall extends GameObject {
 
     collide(otherObject, game) {
         super.collide(otherObject);
-        if (this.removed && typeof otherObject.setWeapon === 'function') {
+        if (this.removed && typeof otherObject.setWeapon === 'function' && otherObject.name) {
             game.spawn(new AutoDefenseTank({
                 x: this.x,
                 y: this.y

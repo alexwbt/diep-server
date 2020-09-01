@@ -241,7 +241,6 @@ module.exports = class Game {
 
         const alivePlayers = clients.filter(c => c.player && !c.player.removed);
         this.io.emit('alivePlayers', alivePlayers.map(c => ({ name: c.name, kills: c.killCount })));
-        console.log(alivePlayers.length);
         if (alivePlayers.length === 1 && this.gameStarted) {
             this.io.emit('gameEnded', { winner: alivePlayers[0].name });
             this.gameStarted = false;

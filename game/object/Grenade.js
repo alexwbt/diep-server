@@ -93,18 +93,4 @@ module.exports = class Grenade extends GameObject {
             && (!this.thrown || (this.ownerId !== otherObject.objectId && this.ownerId !== otherObject.ownerId))
     }
 
-    render(ctx, game) {
-        const { x, y, radius, onScreen } = super.render(ctx, game);
-        if (!onScreen) return;
-
-        ctx.globalAlpha = this.alpha;
-        ctx.lineWidth = radius * this.borderWidth;
-        ctx.strokeStyle = Math.floor(this.timer * 5) % 2 === 0 ? 'red' : 'black';
-        ctx.beginPath();
-        ctx.moveTo(x - radius, y);
-        ctx.lineTo(x + radius, y);
-        ctx.stroke();
-        ctx.globalAlpha = 1;
-    }
-
 }
