@@ -35,7 +35,7 @@ class Client {
             this.socket.broadcast.emit('playerRotate', [this.player.objectId, this.player.control.rotate]);
         });
 
-        if (!!process.env.MIN_DATA)
+        if (process.env.MIN_DATA === 'true')
             this.socket.on('initialUpdate', () => this.socket.emit('update', this.game.getData()));
 
         this.socket.on('throwGrenade', () => this.player && typeof this.player.throwGrenade === 'function' && this.player.throwGrenade(this.game));

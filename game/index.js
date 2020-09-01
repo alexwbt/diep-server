@@ -56,7 +56,7 @@ module.exports = class Game {
         this.updateCounter += deltaTime;
         if (this.updateCounter > +process.env.UPDATE) {
             this.updateCounter = 0;
-            const data = this.getData(!!process.env.MIN_DATA);
+            const data = this.getData(process.env.MIN_DATA　=== 'true');
             data && this.io.emit('update', data);
         }
     }

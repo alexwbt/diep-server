@@ -16,8 +16,7 @@ module.exports = class Grenade extends GameObject {
             team: !!owner ? owner.team : undefined,
             objectType: GRENADE
         });
-        if (owner)
-            this.ownerId = owner.objectId;
+        if (owner) this.ownerId = owner.objectId;
         this.owner = owner;
         this.timer = 3;
         this.range = 0.5;
@@ -73,24 +72,19 @@ module.exports = class Grenade extends GameObject {
         }
     }
 
-    collide(otherObject, game) {
+    collide(otherObject) {
         super.collide(otherObject);
-        if (this.thrown) {
-            if (this.removed && !this.exploded)
-                this.explode(game);
-            return;
-        }
-        if (this.removed && typeof otherObject.setWeapon === 'function') {
+        if (this.thrown) return;
+        if (this.removed && typeof otherObject.setWeapon === 'function' && !otherObject.grenade)
             otherObject.grenade++;
-        } else {
+        else {
             this.removed = false;
             this.health = this.maxHealth;
         }
     }
 
-    differentTeam(otherObject) {
-        return (this.team !== otherObject.team || this.team === 0)
-            && (!this.thrown || (this.ownerId !== otherObject.objectId && this.ownerId !== otherObject.ownerId))
+    differentTeam() {
+        return true;
     }
 
 }

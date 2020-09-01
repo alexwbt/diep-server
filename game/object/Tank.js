@@ -49,13 +49,18 @@ module.exports = class Tank extends GameObject {
 
     getData() {
         return super.getData().concat([
-            this.weapon.firing
+            this.weapon.firing,
+            this.weaponType,
+            this.weapon.getData(),
+            this.grenade
         ]);
     }
 
     setData(data) {
         let i = super.setData(data);
         this.weapon.firing = data[i++];
+        this.setWeapon(data[i++], data[i++]);
+        this.grenade = data[i++];
         return i;
     }
 
