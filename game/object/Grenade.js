@@ -75,7 +75,7 @@ module.exports = class Grenade extends GameObject {
     collide(otherObject) {
         super.collide(otherObject);
         if (this.thrown) return;
-        if (this.removed && typeof otherObject.setWeapon === 'function' && !otherObject.grenade)
+        if (this.removed && typeof otherObject.setWeapon === 'function' && otherObject.name && !otherObject.grenade)
             otherObject.grenade++;
         else {
             this.removed = false;
