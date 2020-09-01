@@ -51,7 +51,7 @@ class Client {
             if (this.player) {
                 this.player.removed = true;
                 if (this.player.name) socket.broadcast.emit('gameAlert', this.player.name + ' left');
-                if (this.game.deathSocketUpdate().length < 2 && countdownObject.countdownInterval) {
+                if (this.game.deathSocketUpdate().length < +(process.env.START_GAME_PLAYER_COUNT || 2) && countdownObject.countdownInterval) {
                     clearInterval(countdownObject.countdownInterval);
                     countdownObject.countdownInterval = false;
                     countdownObject.countdown = -10;
