@@ -51,8 +51,8 @@ module.exports = class Grenade extends GameObject {
         this.removed = true;
         const step = 10 * Math.PI / 180;
         for (let i = 0; i < 36; i++) {
-            const x = this.x + Math.cos(i * step) * (i % 2 === 0 ? this.radius * 1.2 : this.radius);
-            const y = this.y + Math.sin(i * step) * (i % 2 === 0 ? this.radius * 1.2 : this.radius);
+            const x = this.x + Math.cos(i * step) * this.radius;
+            const y = this.y + Math.sin(i * step) * this.radius;
             game.spawn(new CannonBall({
                 x, y,
                 radius: 2,
@@ -64,7 +64,8 @@ module.exports = class Grenade extends GameObject {
                 health: 5,
                 bodyDamage: 30,
                 movingDirection: i * step,
-                movingSpeed: 500,
+                // movingSpeed: 500,
+                movingSpeed: (i % 2 === 0 ? 500 : 500 * 0.5),
                 lifeTime: this.range,
                 // ownerId: this.owner.ownerId || this.owner.objectId,
                 ownerName: this.owner.name
