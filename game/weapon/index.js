@@ -1,5 +1,6 @@
 const Cannon = require("./Cannon");
 const MissileLauncher = require("./MissileLauncher");
+const RocketLauncher = require("./RocketLauncher");
 
 const weaponList = [
     {
@@ -45,6 +46,12 @@ const weaponList = [
             weapon.components.push(new MissileLauncher(owner, { reloadSpeed: 1.5, length: 1.35, y: -0.25, rotate: -1.1 }));
             weapon.components.push(new MissileLauncher(owner, { reloadSpeed: 1.5, length: 1.5, rotate: -0.62, delay: owner.reloadSpeed / 2 }));
             weapon.components.push(new MissileLauncher(owner, { reloadSpeed: 1.5, length: 1.5, rotate:  0.62, delay: owner.reloadSpeed / 2 }));
+        }
+    },
+    {
+        name: 'bazooka',
+        compose: (weapon, owner) => {
+            weapon.components.push(new RocketLauncher(owner, { reloadSpeed: 4, length: 4.5, x: -2, y: -0.5 }));
         }
     },
 ];

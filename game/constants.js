@@ -12,6 +12,7 @@ const AD_TANK = 8;
 const AD_TANK_BALL = 9;
 const GRENADE = 10;
 const MISSILE = 11;
+const ROCKET = 12;
 
 // shapes
 const CIRCLE = 0;
@@ -39,6 +40,7 @@ module.exports = {
     AD_TANK_BALL,
     GRENADE,
     MISSILE,
+    ROCKET,
 
     CIRCLE,
     POLYGON,
