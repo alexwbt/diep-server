@@ -35,15 +35,16 @@ module.exports = class AutoDefenseTank extends Tank {
         if (dis > range) this.move(Math.atan2(dif.y, dif.x), deltaTime);
         else if (this.target) {
             this.weapon.firing = true;
-            this.rotate = degree(Math.atan2(this.target.y - this.y, this.target.x - this.x));
-            this.move(radians(this.rotate), deltaTime);
+            const dir = Math.atan2(this.target.y - this.y, this.target.x - this.x);
+            this.rotate = degree(dir);
+            this.move(dir, deltaTime);
             this.target = false;
         } else this.stop();
         if (!this.weapon.firing) this.rotate = this.owner.rotate;
     }
 
     otherObjectUpdate(otherObject) {
-        if (otherObject === this.owner ||
+        if (otherObject.objectId === this.ownerId ||
             !otherObject.weapon ||
             !otherObject.name ||
             !this.differentTeam(otherObject) ||

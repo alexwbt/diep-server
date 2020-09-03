@@ -1,4 +1,5 @@
 const Cannon = require("./Cannon");
+const MissileLauncher = require("./MissileLauncher");
 
 const weaponList = [
     {
@@ -29,6 +30,21 @@ const weaponList = [
             weapon.components.push(new Cannon(owner, { reloadSpeed: 0.5, width: 0.4, y: -0.25 }));
             weapon.components.push(new Cannon(owner, { reloadSpeed: 0.5, width: 0.4, y: 0.7, length: 1.3, delay: owner.reloadSpeed / 2 }));
             weapon.components.push(new Cannon(owner, { reloadSpeed: 0.5, width: 0.4, y: -0.7, length: 1.3, delay: owner.reloadSpeed / 2 }));
+        }
+    },
+    {
+        name: 'singleMissile',
+        compose: (weapon, owner) => {
+            weapon.components.push(new MissileLauncher(owner, { reloadSpeed: 0.5, width: 1.2, bulletSpeed: 1.2 }));
+        }
+    },
+    {
+        name: 'quadMissile',
+        compose: (weapon, owner) => {
+            weapon.components.push(new MissileLauncher(owner, { reloadSpeed: 1.5, length: 1.35, y:  0.25, rotate:  1.1 }));
+            weapon.components.push(new MissileLauncher(owner, { reloadSpeed: 1.5, length: 1.35, y: -0.25, rotate: -1.1 }));
+            weapon.components.push(new MissileLauncher(owner, { reloadSpeed: 1.5, length: 1.5, rotate: -0.62, delay: owner.reloadSpeed / 2 }));
+            weapon.components.push(new MissileLauncher(owner, { reloadSpeed: 1.5, length: 1.5, rotate:  0.62, delay: owner.reloadSpeed / 2 }));
         }
     },
 ];
