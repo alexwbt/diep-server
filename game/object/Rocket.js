@@ -14,7 +14,7 @@ module.exports = class Rocket extends CannonBall {
 
     update(deltaTime, game) {
         super.update(deltaTime, game);
-        this.movingSpeed += 200 * deltaTime;
+        this.movingSpeed += 300 * deltaTime;
     }
 
     collide(otherObject, game) {
@@ -33,7 +33,7 @@ module.exports = class Rocket extends CannonBall {
                 health: 5,
                 bodyDamage: 30,
                 movingDirection: i * step,
-                movingSpeed: (i % 2 === 0 ? 500 : 500 * 0.5),
+                movingSpeed: 500,
                 lifeTime: 0.1,
                 ownerName: this.ownerName
             }));
