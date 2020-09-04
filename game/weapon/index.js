@@ -12,8 +12,8 @@ const weaponList = [
     {
         name: 'twinCannon',
         compose: (weapon, owner) => {
-            weapon.components.push(new Cannon(owner, { bulletSpeed: 1.2, y: 0.5, }));
-            weapon.components.push(new Cannon(owner, { bulletSpeed: 1.2, y: -0.5, delay: owner.reloadSpeed / 2 }));
+            weapon.components.push(new Cannon(owner, { bulletPenetration: 0.5, reloadSpeed: 0.5, bulletSpeed: 1.2, y: 0.5, }));
+            weapon.components.push(new Cannon(owner, { bulletPenetration: 0.5, reloadSpeed: 0.5, bulletSpeed: 1.2, y: -0.5, delay: owner.reloadSpeed / 2 }));
         }
     },
     {
@@ -27,31 +27,37 @@ const weaponList = [
     {
         name: 'minigun',
         compose: (weapon, owner) => {
-            weapon.components.push(new Cannon(owner, { reloadSpeed: 0.5, width: 0.4, y: 0.25 }));
-            weapon.components.push(new Cannon(owner, { reloadSpeed: 0.5, width: 0.4, y: -0.25 }));
-            weapon.components.push(new Cannon(owner, { reloadSpeed: 0.5, width: 0.4, y: 0.7, length: 1.3, delay: owner.reloadSpeed / 2 }));
-            weapon.components.push(new Cannon(owner, { reloadSpeed: 0.5, width: 0.4, y: -0.7, length: 1.3, delay: owner.reloadSpeed / 2 }));
+            weapon.components.push(new Cannon(owner, {  bulletPenetration: 0.8, reloadSpeed: 0.5, width: 0.4, y: 0.25 }));
+            weapon.components.push(new Cannon(owner, {  bulletPenetration: 0.8, reloadSpeed: 0.5, width: 0.4, y: -0.25 }));
+            weapon.components.push(new Cannon(owner, {  bulletPenetration: 0.8, reloadSpeed: 0.5, width: 0.4, y: 0.7, length: 1.3, delay: owner.reloadSpeed / 2 }));
+            weapon.components.push(new Cannon(owner, {  bulletPenetration: 0.8, reloadSpeed: 0.5, width: 0.4, y: -0.7, length: 1.3, delay: owner.reloadSpeed / 2 }));
         }
     },
     {
         name: 'singleMissile',
         compose: (weapon, owner) => {
-            weapon.components.push(new MissileLauncher(owner, { reloadSpeed: 0.5, width: 1.2, bulletSpeed: 1.5 }));
+            weapon.components.push(new MissileLauncher(owner, { reloadSpeed: 0.5, width: 1.2, bulletSpeed: 1.5, bulletPenetration: 2 }));
         }
     },
     {
         name: 'quadMissile',
         compose: (weapon, owner) => {
-            weapon.components.push(new MissileLauncher(owner, { reloadSpeed: 1.5, length: 1.35, y:  0.25, rotate:  1.1 }));
-            weapon.components.push(new MissileLauncher(owner, { reloadSpeed: 1.5, length: 1.35, y: -0.25, rotate: -1.1 }));
-            weapon.components.push(new MissileLauncher(owner, { reloadSpeed: 1.5, length: 1.5, rotate: -0.62, delay: owner.reloadSpeed / 2 }));
-            weapon.components.push(new MissileLauncher(owner, { reloadSpeed: 1.5, length: 1.5, rotate:  0.62, delay: owner.reloadSpeed / 2 }));
+            weapon.components.push(new MissileLauncher(owner, { bulletSpeed: 1.2, reloadSpeed: 1.5, length: 1.35, y:  0.25, rotate:  1.1 }));
+            weapon.components.push(new MissileLauncher(owner, { bulletSpeed: 1.2, reloadSpeed: 1.5, length: 1.35, y: -0.25, rotate: -1.1 }));
+            weapon.components.push(new MissileLauncher(owner, { bulletSpeed: 1.2, reloadSpeed: 1.5, length: 1.5, rotate: -0.62, delay: owner.reloadSpeed / 2 }));
+            weapon.components.push(new MissileLauncher(owner, { bulletSpeed: 1.2, reloadSpeed: 1.5, length: 1.5, rotate:  0.62, delay: owner.reloadSpeed / 2 }));
         }
     },
     {
         name: 'bazooka',
         compose: (weapon, owner) => {
             weapon.components.push(new RocketLauncher(owner, { reloadSpeed: 4, length: 4.5, x: -2, y: -0.75 }));
+        }
+    },
+    {
+        name: 'sniper',
+        compose: (weapon, owner) => {
+            weapon.components.push(new Cannon(owner, { reloadSpeed: 3, width: 0.5, length: 3, bulletSpeed: 5, bulletDamage: 10 }));
         }
     },
 ];

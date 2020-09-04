@@ -12,7 +12,7 @@ module.exports = class Tank extends GameObject {
             objectType: TANK
         });
         if (initInfo) {
-            this.movementSpeed = defaultValue(initInfo.movementSpeed, 60);
+            this.movementSpeed = defaultValue(initInfo.movementSpeed, 80);
             this.reloadSpeed = defaultValue(initInfo.reloadSpeed, 0.60);
             this.bulletSpeed = defaultValue(initInfo.bulletSpeed, 125);
             this.bulletDamage = defaultValue(initInfo.bulletDamage, 3);

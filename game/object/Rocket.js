@@ -12,6 +12,11 @@ module.exports = class Rocket extends CannonBall {
         this.objectType = ROCKET;
     }
 
+    update(deltaTime, game) {
+        super.update(deltaTime, game);
+        this.movingSpeed += 200 * deltaTime;
+    }
+
     collide(otherObject, game) {
         super.collide(otherObject);
         const step = 30 * Math.PI / 180;
