@@ -209,8 +209,8 @@ module.exports = class Game {
                 if (otherObject === object) return;
                 if (collision(object.getShape(), otherObject.getShape())) {
                     object.collide(otherObject, this);
-                    // if (!this.gameStarted)
-                    //     object.health = object.maxHealth;
+                    if (!this.gameStarted)
+                        object.health = object.maxHealth;
                     if (object.removed && object.name && !updated) {
                         this.deathSocketUpdate(object, otherObject);
                         updated = true;
