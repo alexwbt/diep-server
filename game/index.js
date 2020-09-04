@@ -181,6 +181,7 @@ module.exports = class Game {
                     object.shouldSendSocket = true;
                 object.rotate = object.control.rotate;
                 object.weapon.firing = object.control.firing;
+                object.dashing = object.control.dashing;
                 if (object.control.moving)
                     object.move(object.control.movingDirection, deltaTime);
                 else object.stop();
@@ -208,8 +209,8 @@ module.exports = class Game {
                 if (otherObject === object) return;
                 if (collision(object.getShape(), otherObject.getShape())) {
                     object.collide(otherObject, this);
-                    if (!this.gameStarted)
-                        object.health = object.maxHealth;
+                    // if (!this.gameStarted)
+                    //     object.health = object.maxHealth;
                     if (object.removed && object.name && !updated) {
                         this.deathSocketUpdate(object, otherObject);
                         updated = true;

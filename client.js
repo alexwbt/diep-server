@@ -29,6 +29,7 @@ class Client {
             if (this.player && data) this.player.control = {
                 rotate: typeof data.rotate === 'number' ? data.rotate : 0,
                 firing: typeof data.firing === 'boolean' && data.firing,
+                dashing: typeof data.dashing === 'boolean' && data.dashing,
                 moving: typeof data.moving === 'boolean' && data.moving,
                 movingDirection: typeof data.movingDirection === 'number' ? data.movingDirection : 0
             };
@@ -39,6 +40,7 @@ class Client {
             this.socket.on('initialUpdate', () => this.socket.emit('update', this.game.getData()));
 
         this.socket.on('throwGrenade', () => this.player && typeof this.player.throwGrenade === 'function' && this.player.throwGrenade(this.game));
+        this.socket.on('flash', () => this.player && typeof this.player.flash === 'function' && this.player.flash());
 
         this.socket.on('chat', data => {
             if (data && typeof data === 'string' && this.player && this.player.name) {

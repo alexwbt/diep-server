@@ -1,18 +1,21 @@
 
 // object types
-const GAME_OBJECT = 0;
-const REGULAR_POLYGON = 1;
-const TANK = 2;
-const CANNON_BALL = 3;
-const WEAPON_BALL = 4;
-const HEAL_BALL = 5;
-const SHIELD_BALL = 6;
-const BUSH = 7;
-const AD_TANK = 8;
-const AD_TANK_BALL = 9;
-const GRENADE = 10;
-const MISSILE = 11;
-const ROCKET = 12;
+let i = 0;
+const GAME_OBJECT = i++;
+const REGULAR_POLYGON = i++;
+const TANK = i++;
+const CANNON_BALL = i++;
+const BUSH = i++;
+const AD_TANK = i++;
+const MISSILE = i++;
+const ROCKET = i++;
+
+// item ball object types
+const WEAPON_BALL = i++;
+const HEAL_BALL = i++;
+const SHIELD_BALL = i++;
+const AD_TANK_BALL = i++;
+const GRENADE = i++;
 
 // shapes
 const CIRCLE = 0;

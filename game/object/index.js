@@ -137,6 +137,7 @@ module.exports = class GameObject {
             this.x,
             this.y,
             this.rotate,
+            this.alpha,
             this.health,
             this.shield,
             this.movingDirection,
@@ -152,6 +153,7 @@ module.exports = class GameObject {
         this.x = data[i++];
         this.y = data[i++];
         this.rotate = data[i++];
+        this.alpha = data[i++];
         this.health = data[i++];
         this.shield = data[i++];
         this.movingDirection = data[i++];
