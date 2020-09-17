@@ -13,7 +13,8 @@ module.exports = class WeaponBall extends GameObject {
             bodyDamage: 0,
             objectType: WEAPON_BALL
         });
-        this.setWeapon(weaponList[Math.floor(Math.random() * (weaponList.length - 1)) + 1].name);
+        this.weaponIndex = Math.floor(Math.random() * (weaponList.length - 1)) + 1;
+        this.setWeapon(weaponList[this.weaponIndex].name);
     }
 
     getInfo() {

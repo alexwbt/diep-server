@@ -225,82 +225,22 @@ module.exports = class GameObject {
             this.momentumY += force[1];
         });
         this.forces = [];
-        this.x += this.momentumX * deltaTime;
-        this.y += this.momentumY * deltaTime;
+        this.movementX = 0;
+        this.movementY = 0;
+        this.movementX += this.momentumX * deltaTime;
+        this.movementY += this.momentumY * deltaTime;
         if (Math.abs(this.momentumX) < 0.001) this.momentumX = 0;
         else this.momentumX *= Math.pow(Math.E, -this.friction * deltaTime);
         if (Math.abs(this.momentumY) < 0.001) this.momentumY = 0;
         else this.momentumY *= Math.pow(Math.E, -this.friction * deltaTime);
 
-        this.x += Math.cos(this.movingDirection) * this.movingSpeed * deltaTime;
-        this.y += Math.sin(this.movingDirection) * this.movingSpeed * deltaTime;
+        this.movementX += Math.cos(this.movingDirection) * this.movingSpeed * deltaTime;
+        this.movementY += Math.sin(this.movingDirection) * this.movingSpeed * deltaTime;
+        this.x += this.movementX;
+        this.y += this.movementY;
 
         if (this.alpha < 1) this.alpha += deltaTime * 10;
         else this.alpha = 1;
-    }
-
-    render(ctx, game) {
-        const { x, y, radius, onScreen } = this.onScreen(game);
-        if (!onScreen) return { x, y, radius, onScreen };
-        ctx.globalAlpha = this.alpha;
-
-        if (this.shield > 0) {
-            ctx.strokeStyle = 'rgba(150, 150, 200, 0.5)';
-            ctx.lineWidth = this.shield * 0.1 * game.scale;
-            ctx.beginPath();
-            ctx.arc(x, y, radius * this.shieldRadiusMod, 0, 2 * Math.PI);
-            ctx.stroke();
-        }
-
-        ctx.fillStyle = this.color;
-        ctx.beginPath();
-        ctx.arc(x, y, radius, 0, 2 * Math.PI);
-        ctx.fill();
-
-        ctx.strokeStyle = this.borderColor;
-        ctx.lineWidth = radius * this.borderWidth;
-        ctx.beginPath();
-        ctx.arc(x, y, radius * (1 - this.borderWidth / 2) + 0.5, 0, 2 * Math.PI);
-        ctx.stroke();
-
-        this.healthBarRender(ctx, x, y, radius);
-
-        if (this.name) {
-            ctx.font = "30px consolas";
-            ctx.fillStyle = "black";
-            ctx.textAlign = "center";
-            ctx.fillText(this.name, x, y - radius * 1.5);
-        }
-        ctx.globalAlpha = 1;
-        return { x, y, radius, onScreen };
-    }
-
-    healthBarRender(ctx, x, y, radius) {
-        if (this.renderHealthBar && this.health !== this.maxHealth) {
-            ctx.fillStyle = this.healthBarColor;
-            ctx.fillRect(x - radius, y + radius * 1.2, radius * 2, 8);
-            ctx.fillStyle = this.healthColor;
-            ctx.fillRect(x - radius, y + radius * 1.2, radius * 2 * this.health / this.maxHealth, 8);
-        }
-    }
-
-    onMap(map) {
-        const { x, y } = map.onMap(this.x, this.y);
-        const radius = this.radius * map.scale;
-        return {
-            x, y, radius,
-            onMap: collision({ shape: CIRCLE, x, y, radius }, { shape: CIRCLE, x: map.x, y: map.y, radius: map.radius })
-        };
-    }
-
-    mapRender(ctx, map) {
-        const { x, y, radius, onMap } = this.onMap(map);
-        if (!onMap) return;
-
-        ctx.fillStyle = this.color;
-        ctx.beginPath();
-        ctx.arc(x, y, radius, 0, 2 * Math.PI);
-        ctx.fill();
     }
 
 }

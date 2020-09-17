@@ -42,10 +42,10 @@ const weaponList = [
     {
         name: 'quadMissile',
         compose: (weapon, owner) => {
-            weapon.components.push(new MissileLauncher(owner, { bulletSpeed: 1.2, reloadSpeed: 1.5, length: 1.35, y:  0.25, rotate:  1.1 }));
-            weapon.components.push(new MissileLauncher(owner, { bulletSpeed: 1.2, reloadSpeed: 1.5, length: 1.35, y: -0.25, rotate: -1.1 }));
-            weapon.components.push(new MissileLauncher(owner, { bulletSpeed: 1.2, reloadSpeed: 1.5, length: 1.5, rotate: -0.62, delay: owner.reloadSpeed / 2 }));
-            weapon.components.push(new MissileLauncher(owner, { bulletSpeed: 1.2, reloadSpeed: 1.5, length: 1.5, rotate:  0.62, delay: owner.reloadSpeed / 2 }));
+            weapon.components.push(new MissileLauncher(owner, { bulletDamage: 2, bulletSpeed: 1.2, reloadSpeed: 1.5, length: 1.35, y:  0.25, rotate:  1.1 }));
+            weapon.components.push(new MissileLauncher(owner, { bulletDamage: 2, bulletSpeed: 1.2, reloadSpeed: 1.5, length: 1.35, y: -0.25, rotate: -1.1 }));
+            weapon.components.push(new MissileLauncher(owner, { bulletDamage: 2, bulletSpeed: 1.2, reloadSpeed: 1.5, length: 1.5, rotate: -0.62, delay: owner.reloadSpeed / 2 }));
+            weapon.components.push(new MissileLauncher(owner, { bulletDamage: 2, bulletSpeed: 1.2, reloadSpeed: 1.5, length: 1.5, rotate:  0.62, delay: owner.reloadSpeed / 2 }));
         }
     },
     {
@@ -57,7 +57,7 @@ const weaponList = [
     {
         name: 'sniper',
         compose: (weapon, owner) => {
-            weapon.components.push(new Cannon(owner, { reloadSpeed: 3, width: 0.5, length: 3, bulletSpeed: 5, bulletDamage: 10 }));
+            weapon.components.push(new Cannon(owner, { reloadSpeed: 3, width: 0.5, length: 3, bulletSpeed: 5, bulletDamage: 10, range: 1 }));
         }
     },
 ];
@@ -68,7 +68,8 @@ module.exports = class Weapon {
         this.type = type;
         this.firing = false;
         this.components = [];
-        (weaponList.find(w => w.name === type) || weaponList[0]).compose(this, owner);
+        this.weaponIndex = weaponList.findIndex(w => w.name === type);
+        (weaponList[this.weaponIndex] || weaponList[0]).compose(this, owner);
     }
 
     getData() {
@@ -85,6 +86,10 @@ module.exports = class Weapon {
 
     render(ctx, game) {
         this.components.forEach(c => c.render(ctx, game));
+    }
+
+    getLastComponent() {
+        return this.components[this.components.length - 1];
     }
 
 }

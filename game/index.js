@@ -9,6 +9,7 @@ const { clients } = require("../client");
 const Bush = require("./object/Bush");
 const AutoDefenseTankBall = require("./object/AutoDefenseTankBall");
 const Grenade = require("./object/Grenade");
+const AiTank = require("./object/AiTank");
 
 module.exports = class Game {
 
@@ -162,6 +163,11 @@ module.exports = class Game {
             this.spawnParticle(new Bush(), true, false, 0, false);
     }
 
+    spawnAI(count = 5) {
+        for (let i = 0; i < count; i++)
+            this.spawn(new AiTank(), true, false, this.borderRadius / 2)
+    }
+
     update(deltaTime) {
         // update particles
         this.particles = this.particles.filter(particle => {
@@ -194,7 +200,7 @@ module.exports = class Game {
                         object.health -= this.minBorderRadius / this.borderRadius;
                         if (object.health <= 0) {
                             object.removed = true;
-                            this.deathSocketUpdate(object);
+                            if (object.name) this.deathSocketUpdate(object);
                         }
                         break;
                     default:
@@ -242,8 +248,8 @@ module.exports = class Game {
 
         const alivePlayers = clients.filter(c => c.player && !c.player.removed);
         this.io.emit('alivePlayers', alivePlayers.map(c => ({ name: c.name, kills: c.killCount })));
-        if (alivePlayers.length === 1 && this.gameStarted) {
-            this.io.emit('gameEnded', { winner: alivePlayers[0].name });
+        if (alivePlayers.length <= 1 && this.gameStarted) {
+            this.io.emit('gameEnded', { winner: alivePlayers[0] ? alivePlayers[0].name : 'Nobody' });
             this.gameStarted = false;
             setTimeout(() => this.init(), 100);
         }

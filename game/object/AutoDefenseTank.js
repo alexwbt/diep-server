@@ -1,6 +1,6 @@
 const Tank = require("./Tank");
 const { AD_TANK, defaultValue } = require("../constants");
-const { degree, different, radians } = require("../maths");
+const { degree, different } = require("../maths");
 
 module.exports = class AutoDefenseTank extends Tank {
 
@@ -46,7 +46,7 @@ module.exports = class AutoDefenseTank extends Tank {
     otherObjectUpdate(otherObject) {
         if (otherObject.objectId === this.ownerId ||
             !otherObject.weapon ||
-            !otherObject.name ||
+            // !otherObject.name ||
             !this.differentTeam(otherObject) ||
             !otherObject.differentTeam(this))
             return;

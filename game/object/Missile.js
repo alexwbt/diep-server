@@ -7,7 +7,7 @@ module.exports = class Missile extends CannonBall {
     constructor(initInfo) {
         super({
             ...initInfo,
-            friction: 1.5
+            friction: 3
         });
 
         this.objectType = MISSILE;
