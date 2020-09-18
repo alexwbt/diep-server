@@ -10,7 +10,7 @@ module.exports = class AiTank extends Tank {
             color: '#994466ff',
             ...initInfo
         });
-        this.targetRange = defaultValue(initInfo.targetRange, 1000);
+        this.targetRange = defaultValue(initInfo.targetRange, 2000);
         this.killTarget = false;
     }
 
