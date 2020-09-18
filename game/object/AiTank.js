@@ -24,7 +24,7 @@ module.exports = class AiTank extends Tank {
 
             const dif = different(this, this.target);
             const dis = dif.x * dif.x + dif.y * dif.y;
-            const fireRange = bulletSpeed * comp.range;
+            const fireRange = Math.min(bulletSpeed * comp.range, 800);
             this.weapon.firing = this.killTarget && dis < fireRange * fireRange;
 
             let targetX = this.target.x
