@@ -82,7 +82,7 @@ class Client {
                     const players = this.game.deathSocketUpdate();
                     this.game.init();
                     players.forEach(c => c.spawnPlayerObject(true));
-                    this.game.spawnAI(Math.max(1, 5 - players.length));
+                    this.game.spawnAI(Math.max(1, (+process.env.AI_COUNT) - players.length));
                     this.game.gameStarted = countdownObject.countdown > -10;
                     clearInterval(countdownObject.countdownInterval);
                     countdownObject.countdownInterval = false;

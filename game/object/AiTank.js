@@ -1,7 +1,6 @@
 const Tank = require("./Tank");
 const { defaultValue, HEAL_BALL, WEAPON_BALL, TANK, SHIELD_BALL } = require("../constants");
 const { degree, different } = require("../maths");
-const GameObject = require(".");
 
 module.exports = class AiTank extends Tank {
 
