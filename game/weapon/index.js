@@ -34,6 +34,14 @@ const weaponList = [
         }
     },
     {
+        name: 'shotgun',
+        compose: (weapon, owner) => {
+            weapon.components.push(new Cannon(owner, {  range: 0.4, bulletSpeed: 2, bulletDamage: 3, width: 0.4 }));
+            weapon.components.push(new Cannon(owner, {  range: 0.6, bulletSpeed: 2, bulletDamage: 3, width: 0.4, rotate: -0.15, y: 0.7, length: 1.3, }));
+            weapon.components.push(new Cannon(owner, {  range: 0.6, bulletSpeed: 2, bulletDamage: 3, width: 0.4, rotate: 0.15, y: -0.7, length: 1.3, }));
+        }
+    },
+    {
         name: 'singleMissile',
         compose: (weapon, owner) => {
             weapon.components.push(new MissileLauncher(owner, { reloadSpeed: 0.5, width: 1.2, bulletSpeed: 1.5, bulletPenetration: 2 }));
