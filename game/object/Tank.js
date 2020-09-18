@@ -117,15 +117,15 @@ module.exports = class Tank extends GameObject {
     }
 
     throwGrenade(game) {
-        if (this.grenade >= 1) {
-            this.grenade--;
+        if (this.grenade) {
             const dir = radians(this.rotate);
             const x = Math.cos(dir);
             const y = Math.sin(dir);
             const grenade = new Grenade({
                 x: this.x + x * (this.radius + 5),
                 y: this.y + y * (this.radius + 5)
-            }, this);
+            }, this.grenade, this);
+            this.grenade = false;
             grenade.addForce({
                 x: x * 500,
                 y: y * 500

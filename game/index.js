@@ -3,7 +3,7 @@ const RegularPolygon = require("./object/RegularPolygon");
 const WeaponBall = require('./object/WeaponBall');
 const HealBall = require('./object/HealBall');
 const ShieldBall = require('./object/ShieldBall');
-const { TANK } = require('./constants');
+const { TANK, GRAVITY_FIELD } = require('./constants');
 const GameObject = require("./object");
 const { clients } = require("../client");
 const Bush = require("./object/Bush");
@@ -156,6 +156,8 @@ module.exports = class Game {
             this.spawn(new AutoDefenseTankBall(), true, this.borderRadius / 2);
         for (let i = 0; i < count; i++)
             this.spawn(new Grenade(), true);
+        for (let i = 0; i < count; i++)
+            this.spawn(new Grenade({}, 'black'), true);
     }
 
     spawnBushes(count = 20) {
@@ -202,6 +204,8 @@ module.exports = class Game {
                             object.removed = true;
                             if (object.name) this.deathSocketUpdate(object);
                         }
+                        break;
+                    case GRAVITY_FIELD:
                         break;
                     default:
                         const dir = Math.atan2(-object.y, -object.x);

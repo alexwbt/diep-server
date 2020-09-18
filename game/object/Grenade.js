@@ -1,13 +1,52 @@
 const GameObject = require(".");
 const { GRENADE } = require("../constants");
 const CannonBall = require("./CannonBall");
+const GravityField = require("./GravityField");
+
+const grenades = {
+    default: {
+        color: '#F6BD05ff',
+        timer: 3,
+        explode: (game, grenade) => {
+            const step = 10 * Math.PI / 180;
+            for (let i = 0; i < 36; i++) {
+                const x = grenade.x + Math.cos(i * step) * grenade.radius;
+                const y = grenade.y + Math.sin(i * step) * grenade.radius;
+                game.spawn(new CannonBall({
+                    x, y,
+                    radius: 2,
+                    color: grenade.owner.team === 0 ? '#ff0000ff' : grenade.owner.color,
+                    borderWidth: 0.5,
+                    renderHealthBar: false,
+                    renderOnMap: false,
+                    health: 5,
+                    bodyDamage: 30,
+                    movingDirection: i * step,
+                    movingSpeed: (i % 2 === 0 ? 500 : 500 * 0.5),
+                    lifeTime: 0.5,
+                    ownerName: grenade.owner.name
+                }));
+            }
+        }
+    },
+    black: {
+        color: '#444444ff',
+        timer: 2,
+        explode: (game, grenade) => {
+            game.spawn(new GravityField({
+                x: grenade.x,
+                y: grenade.y
+            }));
+        }
+    }
+};
 
 module.exports = class Grenade extends GameObject {
 
-    constructor(initInfo, owner) {
+    constructor(initInfo, type = 'default', owner) {
         super({
             radius: 5,
-            color: '#F6BD05ff',
+            color: grenades[type].color,
             health: !!owner ? 50 : 1,
             maxHealth: !!owner ? 50 : 1,
             bodyDamage: 0,
@@ -18,15 +57,16 @@ module.exports = class Grenade extends GameObject {
         });
         if (owner) this.ownerId = owner.objectId;
         this.owner = owner;
-        this.timer = 3;
-        this.range = 0.5;
+        this.timer = grenades[type].timer;
         this.thrown = !!owner;
+        this.type = type;
     }
 
     getInfo() {
         return super.getInfo().concat([
             this.timer,
-            this.thrown
+            this.thrown,
+            this.type,
         ]);
     }
 
@@ -34,6 +74,7 @@ module.exports = class Grenade extends GameObject {
         let i = super.setInfo(info);
         this.timer = info[i++];
         this.thrown = info[i++];
+        this.type = info[i++];
         return i;
     }
 
@@ -49,35 +90,14 @@ module.exports = class Grenade extends GameObject {
     explode(game) {
         this.exploded = true;
         this.removed = true;
-        const step = 10 * Math.PI / 180;
-        for (let i = 0; i < 36; i++) {
-            const x = this.x + Math.cos(i * step) * this.radius;
-            const y = this.y + Math.sin(i * step) * this.radius;
-            game.spawn(new CannonBall({
-                x, y,
-                radius: 2,
-                color: this.owner.team === 0 ? '#ff0000ff' : this.owner.color,
-                borderWidth: 0.5,
-                renderHealthBar: false,
-                renderOnMap: false,
-                // team: this.owner.team,
-                health: 5,
-                bodyDamage: 30,
-                movingDirection: i * step,
-                // movingSpeed: 500,
-                movingSpeed: (i % 2 === 0 ? 500 : 500 * 0.5),
-                lifeTime: this.range,
-                // ownerId: this.owner.ownerId || this.owner.objectId,
-                ownerName: this.owner.name
-            }));
-        }
+        grenades[this.type].explode(game, this);
     }
 
     collide(otherObject) {
         super.collide(otherObject);
         if (this.thrown) return;
         if (this.removed && typeof otherObject.setWeapon === 'function' && otherObject.name && !otherObject.grenade)
-            otherObject.grenade++;
+            otherObject.grenade = this.type;
         else {
             this.removed = false;
             this.health = this.maxHealth;

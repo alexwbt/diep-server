@@ -19,18 +19,18 @@ const weaponList = [
     {
         name: 'triplet',
         compose: (weapon, owner) => {
-            weapon.components.push(new Cannon(owner, { bulletSpeed: 1.1, y: 0.5, delay: owner.reloadSpeed / 2 }));
-            weapon.components.push(new Cannon(owner, { bulletSpeed: 1.1, y: -0.5, delay: owner.reloadSpeed / 2 }));
-            weapon.components.push(new Cannon(owner, { bulletSpeed: 1.1, width: 1, length: 1.6 }));
+            weapon.components.push(new Cannon(owner, { bulletPenetration: 2, bulletSpeed: 1.1, y: 0.5, delay: owner.reloadSpeed / 2 }));
+            weapon.components.push(new Cannon(owner, { bulletPenetration: 2, bulletSpeed: 1.1, y: -0.5, delay: owner.reloadSpeed / 2 }));
+            weapon.components.push(new Cannon(owner, { bulletPenetration: 2, bulletSpeed: 1.1, width: 1, length: 1.6 }));
         }
     },
     {
         name: 'minigun',
         compose: (weapon, owner) => {
-            weapon.components.push(new Cannon(owner, {  bulletPenetration: 0.8, reloadSpeed: 0.5, width: 0.4, y: 0.25 }));
-            weapon.components.push(new Cannon(owner, {  bulletPenetration: 0.8, reloadSpeed: 0.5, width: 0.4, y: -0.25 }));
-            weapon.components.push(new Cannon(owner, {  bulletPenetration: 0.8, reloadSpeed: 0.5, width: 0.4, y: 0.7, length: 1.3, delay: owner.reloadSpeed / 2 }));
-            weapon.components.push(new Cannon(owner, {  bulletPenetration: 0.8, reloadSpeed: 0.5, width: 0.4, y: -0.7, length: 1.3, delay: owner.reloadSpeed / 2 }));
+            weapon.components.push(new Cannon(owner, {  bulletSpeed: 2, bulletDamage: 0.5, bulletPenetration: 0.5, reloadSpeed: 0.5, width: 0.4, y: 0.25 }));
+            weapon.components.push(new Cannon(owner, {  bulletSpeed: 2, bulletDamage: 0.5, bulletPenetration: 0.5, reloadSpeed: 0.5, width: 0.4, y: -0.25 }));
+            weapon.components.push(new Cannon(owner, {  bulletSpeed: 2, bulletDamage: 0.5, bulletPenetration: 0.5, reloadSpeed: 0.5, width: 0.4, y: 0.7, length: 1.3, delay: owner.reloadSpeed / 2 }));
+            weapon.components.push(new Cannon(owner, {  bulletSpeed: 2, bulletDamage: 0.5, bulletPenetration: 0.5, reloadSpeed: 0.5, width: 0.4, y: -0.7, length: 1.3, delay: owner.reloadSpeed / 2 }));
         }
     },
     {

@@ -9,6 +9,7 @@ const BUSH = i++;
 const AD_TANK = i++;
 const MISSILE = i++;
 const ROCKET = i++;
+const GRAVITY_FIELD = i++;
 
 // item ball object types
 const WEAPON_BALL = i++;
@@ -44,6 +45,7 @@ module.exports = {
     GRENADE,
     MISSILE,
     ROCKET,
+    GRAVITY_FIELD,
 
     CIRCLE,
     POLYGON,
