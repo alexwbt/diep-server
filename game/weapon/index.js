@@ -36,9 +36,9 @@ const weaponList = [
     {
         name: 'shotgun',
         compose: (weapon, owner) => {
-            weapon.components.push(new Cannon(owner, {  range: 0.4, bulletSpeed: 2, bulletDamage: 2, width: 0.4 }));
-            weapon.components.push(new Cannon(owner, {  range: 0.6, bulletSpeed: 2, bulletDamage: 1, width: 0.4, rotate: 0.15, y: 0.3, length: 1.3, }));
-            weapon.components.push(new Cannon(owner, {  range: 0.6, bulletSpeed: 2, bulletDamage: 1, width: 0.4, rotate: -0.15, y: -0.3, length: 1.3, }));
+            weapon.components.push(new Cannon(owner, {  range: 0.4, bulletSpeed: 2, bulletDamage: 3, width: 0.4 }));
+            weapon.components.push(new Cannon(owner, {  range: 0.6, bulletSpeed: 2, bulletDamage: 2, width: 0.4, rotate: 0.15, y: 0.3, length: 1.3, }));
+            weapon.components.push(new Cannon(owner, {  range: 0.6, bulletSpeed: 2, bulletDamage: 2, width: 0.4, rotate: -0.15, y: -0.3, length: 1.3, }));
             weapon.components.push(new Cannon(owner, {  range: 0.6, bulletSpeed: 2, bulletDamage: 2, width: 0.4, rotate: -0.15, y: 0.7, length: 1.3, }));
             weapon.components.push(new Cannon(owner, {  range: 0.6, bulletSpeed: 2, bulletDamage: 2, width: 0.4, rotate: 0.15, y: -0.7, length: 1.3, }));
         }

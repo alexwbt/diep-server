@@ -16,7 +16,7 @@ module.exports = class ShieldBall extends GameObject {
 
     collide(otherObject) {
         super.collide(otherObject);
-        if (this.removed && typeof otherObject.setWeapon === 'function') {
+        if (this.removed && typeof otherObject.setWeapon === 'function' && otherObject.shield < 300) {
             if (otherObject.shield < 0) otherObject.shield = 0;
             otherObject.shield += 10;
         } else {
