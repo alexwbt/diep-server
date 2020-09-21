@@ -145,8 +145,8 @@ module.exports = class Game {
      * Spawns balls.
      */
     spawnBalls() {
-        for (let i = 0; i < 20; i++)
-            this.spawn(new WeaponBall(), true, this.borderRadius / 2);
+        for (let i = 0; i < 30; i++)
+            this.spawn(new WeaponBall(), true, this.borderRadius * 0.7, this.borderRadius / 3);
         for (let i = 0; i < 30; i++)
             this.spawn(new HealBall(), true, this.borderRadius / 2);
         for (let i = 0; i < 30; i++)
