@@ -26,6 +26,7 @@ class Client {
             if (!this.player) this.spawnPlayerObject();
             else this.player.name = this.name;
             this.socket.broadcast.emit('gameAlert', this.name + ' joined');
+            console.log(`client (${this.clientId}) set name to "${this.name}"`);
         });
 
         this.socket.on('update', data => {
@@ -66,7 +67,7 @@ class Client {
             }
             clients.splice(clients.findIndex(client => client.clientId === this.clientId), 1);
 
-            console.log(`client disconnected (${this.clientId})`);
+            console.log(`client disconnected (${this.clientId}:${this.name})`);
         });
     }
 
