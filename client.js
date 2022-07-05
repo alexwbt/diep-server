@@ -9,10 +9,14 @@ const countdownObject = {
 
 class Client {
 
+    static nextClientId = 1;
+
     constructor(socket, game) {
         this.socket = socket;
         this.game = game;
-        this.clientIndex = clients.length;
+        this.clientId = Client.nextClientId++;
+
+        console.log(`client joined (${this.clientId})`);
 
         this.socket.on('spawnPlayer', () => this.spawnPlayerObject());
 
@@ -60,7 +64,9 @@ class Client {
                     this.socket.broadcast.emit('stopCountdown');
                 }
             }
-            clients.splice(this.clientIndex, 1);
+            clients.splice(clients.findIndex(client => client.clientId === this.clientId), 1);
+
+            console.log(`client disconnected (${this.clientId})`);
         });
     }
 
