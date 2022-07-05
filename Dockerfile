@@ -13,4 +13,7 @@ COPY client.js /app
 COPY index.js /app
 COPY .env /app
 
+ARG PORT
+EXPOSE ${PORT}
+
 CMD ["node", "/app"]
